@@ -154,7 +154,6 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	//if (settings.yayalint_path.length > 0 && settings.yaya_cfg.length > 0) {
 	if (settings.yaya_cfg.length >= 0) {
 		exec(settings.yayalint_path + ' ' + settings.yaya_cfg, (error : ExecException | null, stdout : string, _stderr : string) => {
-		//exec('D:/Downloads/yayalint/yayalint.exe' + ' ' + 'D:\\Downloads\\konnoyayame-master\\ghost\\master\\yaya.txt', (error : ExecException | null, stdout : string, _stderr : string) => {
 			if (error) {
 				// TODO error
 				connection.console.log(error.message);
@@ -171,7 +170,6 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 					const line : integer = parseInt(position[0]);
 					const col : integer = parseInt(position[1]);
 					const base : string = path.dirname(settings.yaya_cfg);
-					//const base : string = path.dirname('D:\\Downloads\\konnoyayame-master\\ghost\\master\\yaya.txt');
 					const p : string = path.normalize(path.join(base, filename));
 					if (path.relative(fileURLToPath(textDocument.uri), p).length == 0) {
 						let severity : DiagnosticSeverity = DiagnosticSeverity.Warning;
