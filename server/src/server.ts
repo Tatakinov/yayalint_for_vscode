@@ -105,7 +105,7 @@ connection.onDidChangeConfiguration(change => {
 		documentSettings.clear();
 	} else {
 		globalSettings = <ExampleSettings>(
-			(change.settings.languageServerExample || defaultSettings)
+			(change.settings.yayalint || defaultSettings)
 		);
 	}
 
@@ -151,12 +151,23 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	const settings = await getDocumentSettings(textDocument.uri);
 
-	//if (settings.yayalint_path.length > 0 && settings.yaya_cfg.length > 0) {
-	if (settings.yaya_cfg.length >= 0) {
-		exec(settings.yayalint_path + ' ' + settings.yaya_cfg, (error : ExecException | null, stdout : string, _stderr : string) => {
+	if (settings.yayalint_path.length == 0) {
+		connection.window.showInformationMessage('yayalint_path is not configured.');
+	}
+	else if (settings.yaya_cfg.length == 0) {
+		connection.window.showInformationMessage('yaya_cfg is not configured.');
+	}
+	else {
+		const yaya_cfg: string = path.resolve(path.resolve(), settings.yaya_cfg);
+		connection.window.showInformationMessage('Starting yayalint: ' + settings.yayalint_path + ' ' + yaya_cfg);
+		exec(settings.yayalint_path + ' ' + yaya_cfg, (error : ExecException | null, stdout : string, stderr : string) => {
 			if (error) {
 				// TODO error
-				connection.console.log(error.message);
+				connection.window.showErrorMessage(error.message);
+				return;
+			}
+			if (stderr.length > 0) {
+				connection.window.showErrorMessage(stderr);
 				return;
 			}
 			const diagnostics : Diagnostic[] = [];
@@ -169,7 +180,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 					const position : string[] = data[5].split(/:/);
 					const line : integer = parseInt(position[0]);
 					const col : integer = parseInt(position[1]);
-					const base : string = path.dirname(settings.yaya_cfg);
+					const base : string = path.dirname(yaya_cfg);
 					const p : string = path.normalize(path.join(base, filename));
 					if (path.relative(fileURLToPath(textDocument.uri), p).length == 0) {
 						let severity : DiagnosticSeverity = DiagnosticSeverity.Warning;
@@ -189,6 +200,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 				}
 			}
 			connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+			connection.window.showInformationMessage('Completed yayalint');
 		});
 	}
 }
