@@ -158,9 +158,11 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		connection.window.showInformationMessage('yaya_cfg is not configured.');
 	}
 	else {
-		const yaya_cfg: string = path.resolve(path.resolve(), settings.yaya_cfg);
-		connection.window.showInformationMessage('Starting yayalint: ' + settings.yayalint_path + ' ' + yaya_cfg);
-		exec(settings.yayalint_path + ' ' + yaya_cfg, (error : ExecException | null, stdout : string, stderr : string) => {
+		//const yaya_cfg as string from settings.yaya_cfg, if it's relative path, completes it based on the workspace path.
+		//workspace path: vscode.workspace.workspaceFolders[0].uri.path
+		const yaya_cfg = path.resolve(vscode.workspace.workspaceFolders[0].uri.path, settings.yaya_cfg);
+		connection.window.showInformationMessage('Starting yayalint: "' + settings.yayalint_path + '" "' + yaya_cfg + '"');
+		exec('"' + settings.yayalint_path + '" "' + yaya_cfg + '"', (error : ExecException | null, stdout : string, stderr : string) => {
 			if (error) {
 				// TODO error
 				connection.window.showErrorMessage(error.message);
