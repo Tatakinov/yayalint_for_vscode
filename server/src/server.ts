@@ -160,50 +160,57 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	else {
 		//const yaya_cfg as string from settings.yaya_cfg, if it's relative path, completes it based on the workspace path.
 		//workspace path: vscode.workspace.workspaceFolders[0].uri.path
-		const yaya_cfg = path.resolve(vscode.workspace.workspaceFolders[0].uri.path, settings.yaya_cfg);
-		connection.window.showInformationMessage('Starting yayalint: "' + settings.yayalint_path + '" "' + yaya_cfg + '"');
-		exec('"' + settings.yayalint_path + '" "' + yaya_cfg + '"', (error : ExecException | null, stdout : string, stderr : string) => {
-			if (error) {
-				// TODO error
-				connection.window.showErrorMessage(error.message);
-				return;
-			}
-			if (stderr.length > 0) {
-				connection.window.showErrorMessage(stderr);
-				return;
-			}
-			const diagnostics : Diagnostic[] = [];
-			for (const l of stdout.split(/(?:\r\n|\r|\n)/)) {
-				const data  = l.split(/\t/);
-				const message : string = data[0];
-				if (message === 'read undefined variable:' || message === 'read undefined function:' || message === 'unused variable:' || message === 'unused function:') {
-					const varname : string = data[1];
-					const filename : string = data[3];
-					const position : string[] = data[5].split(/:/);
-					const line : integer = parseInt(position[0]);
-					const col : integer = parseInt(position[1]);
-					const base : string = path.dirname(yaya_cfg);
-					const p : string = path.normalize(path.join(base, filename));
-					if (path.relative(fileURLToPath(textDocument.uri), p).length == 0) {
-						let severity : DiagnosticSeverity = DiagnosticSeverity.Warning;
-						if (message === 'unused variable:' || message === 'unused function:') {
-							severity = DiagnosticSeverity.Information;
-						}
-						const range : Range = { start: { line: line - 1, character: col - 1 },
-						end: { line: line - 1, character: col + varname.length - 1 } };
-						const diagnostic: Diagnostic = {
-							severity: severity,
-							range: range,
-							message: `${message} ${varname}`,
-							source: 'yayalint'
-						};
-						diagnostics.push(diagnostic);
+		connection.workspace.getWorkspaceFolders().then(folders => {
+			if (folders && folders.length > 0) {
+				const yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
+				connection.window.showInformationMessage('Starting yayalint: "' + settings.yayalint_path + '" "' + yaya_cfg + '"');
+				exec('"' + settings.yayalint_path + '" "' + yaya_cfg + '"', (error : ExecException | null, stdout : string, stderr : string) => {
+					if (error) {
+						// TODO error
+						connection.window.showErrorMessage(error.message);
+						return;
 					}
-				}
+					if (stderr.length > 0) {
+						connection.window.showErrorMessage(stderr);
+						return;
+					}
+					const diagnostics : Diagnostic[] = [];
+					for (const l of stdout.split(/(?:\r\n|\r|\n)/)) {
+						const data  = l.split(/\t/);
+						const message : string = data[0];
+						if (message === 'read undefined variable:' || message === 'read undefined function:' || message === 'unused variable:' || message === 'unused function:') {
+							const varname : string = data[1];
+							const filename : string = data[3];
+							const position : string[] = data[5].split(/:/);
+							const line : integer = parseInt(position[0]);
+							const col : integer = parseInt(position[1]);
+							const base : string = path.dirname(yaya_cfg);
+							const p : string = path.normalize(path.join(base, filename));
+							if (path.relative(fileURLToPath(textDocument.uri), p).length == 0) {
+								let severity : DiagnosticSeverity = DiagnosticSeverity.Warning;
+								if (message === 'unused variable:' || message === 'unused function:') {
+									severity = DiagnosticSeverity.Information;
+								}
+								const range : Range = { start: { line: line - 1, character: col - 1 },
+								end: { line: line - 1, character: col + varname.length - 1 } };
+								const diagnostic: Diagnostic = {
+									severity: severity,
+									range: range,
+									message: `${message} ${varname}`,
+									source: 'yayalint'
+								};
+								diagnostics.push(diagnostic);
+							}
+						}
+					}
+					connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+					connection.window.showInformationMessage('Completed yayalint');
+				});
 			}
-			connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-			connection.window.showInformationMessage('Completed yayalint');
-		});
+			else {
+				connection.window.showErrorMessage("Workspace does not exists.");
+			}
+		})
 	}
 }
 
