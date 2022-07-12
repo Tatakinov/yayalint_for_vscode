@@ -164,7 +164,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 			if (folders && folders.length > 0) {
 				const yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
 				connection.window.showInformationMessage('Starting yayalint: "' + settings.yayalint_path + '" "' + yaya_cfg + '"');
-				exec('"' + settings.yayalint_path + '" "' + yaya_cfg + '"', (error : ExecException | null, stdout : string, stderr : string) => {
+				exec(`"${settings.yayalint_path}" "${yaya_cfg}"`, (error : ExecException | null, stdout : string, stderr : string) => {
 					if (error) {
 						// TODO error
 						connection.window.showErrorMessage(error.message);
