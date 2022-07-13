@@ -4,6 +4,7 @@
 	"author": "tatakinov",
 	"license": "MIT",
 	"version": "0.2.1",
+	"icon": "icon.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Tatakinov/yayalint_for_vscode"
