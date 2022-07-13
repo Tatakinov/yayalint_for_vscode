@@ -99,6 +99,45 @@ const isOpened: Map<string,boolean> = new Map<string, boolean>();
 // Cache the settings of all open documents
 const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
 
+
+let yayalint_charge:string;
+async function update_yayalint_charge(settings:Thenable<ExampleSettings>): Promise<void> {
+	if (settings.yayalint_path.length == 0) {
+		connection.window.showInformationMessage('yayalint_path is not configured.');
+		return;
+	}
+	if (settings.yaya_cfg.length == 0) {
+		connection.window.showInformationMessage('yaya_cfg is not configured.');
+		return;
+	}
+	//const yaya_cfg as string from settings.yaya_cfg, if it's relative path, completes it based on the workspace path.
+	//workspace path: vscode.workspace.workspaceFolders[0].uri.path
+	connection.workspace.getWorkspaceFolders().then(folders => {
+		if (!folders || folders.length == 0) {
+			return;
+		}
+		const yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
+		connection.window.showInformationMessage('Updating yayalint charge: "' + settings.yayalint_path + '" "' + yaya_cfg + '"');
+		exec(`"${settings.yayalint_path}" "${yaya_cfg}"`, (error : ExecException | null, stdout : string, stderr : string) => {
+			if (error) {
+				// TODO error
+				connection.window.showErrorMessage(error.message);
+				return;
+			}
+			if (stderr.length > 0) {
+				connection.window.showErrorMessage(stderr);
+				return;
+			}
+			yayalint_charge=stdout;
+		});
+	})
+}
+async function update_yayalint_charge_by_doc(textDocument:TextDocument): Promise<void> {
+	// In this simple example we get the settings for every validate run.
+	const settings = await getDocumentSettings(textDocument.uri);
+	update_yayalint_charge(settings);
+}
+
 connection.onDidChangeConfiguration(change => {
 	if (hasConfigurationCapability) {
 		// Reset all cached document settings
@@ -108,8 +147,9 @@ connection.onDidChangeConfiguration(change => {
 			(change.settings.yayalint || defaultSettings)
 		);
 	}
-
+	
 	// Revalidate all open text documents
+	update_yayalint_charge(change.settings);
 	documents.all().forEach(validateTextDocument);
 });
 
@@ -137,9 +177,13 @@ documents.onDidClose(e => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
-	if (! isOpened.get(change.document.uri)) {
+	if (!isOpened.get(change.document.uri)) {
 		isOpened.set(change.document.uri, true);
 		validateTextDocument(change.document);
+	}
+	else
+	{
+		update_yayalint_charge_by_doc(change.document);
 	}
 });
 
@@ -148,68 +192,47 @@ documents.onDidSave(change =>{
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-	// In this simple example we get the settings for every validate run.
+	let yaya_cfg;
 	const settings = await getDocumentSettings(textDocument.uri);
-
-	if (settings.yayalint_path.length == 0) {
-		connection.window.showInformationMessage('yayalint_path is not configured.');
-		return;
-	}
-	if (settings.yaya_cfg.length == 0) {
-		connection.window.showInformationMessage('yaya_cfg is not configured.');
-		return;
-	}
-	//const yaya_cfg as string from settings.yaya_cfg, if it's relative path, completes it based on the workspace path.
-	//workspace path: vscode.workspace.workspaceFolders[0].uri.path
 	connection.workspace.getWorkspaceFolders().then(folders => {
 		if (!folders || folders.length == 0) {
 			return;
 		}
-		const yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
-		connection.window.showInformationMessage('Starting yayalint: "' + settings.yayalint_path + '" "' + yaya_cfg + '"');
-		exec(`"${settings.yayalint_path}" "${yaya_cfg}"`, (error : ExecException | null, stdout : string, stderr : string) => {
-			if (error) {
-				// TODO error
-				connection.window.showErrorMessage(error.message);
-				return;
-			}
-			if (stderr.length > 0) {
-				connection.window.showErrorMessage(stderr);
-				return;
-			}
-			const diagnostics : Diagnostic[] = [];
-			for (const l of stdout.split(/(?:\r\n|\r|\n)/)) {
-				const data  = l.split(/\t/);
-				const message : string = data[0];
-				if (message === 'read undefined variable:' || message === 'read undefined function:' || message === 'unused variable:' || message === 'unused function:') {
-					const varname : string = data[1];
-					const filename : string = data[3];
-					const position : string[] = data[5].split(/:/);
-					const line : integer = parseInt(position[0]);
-					const col : integer = parseInt(position[1]);
-					const base : string = path.dirname(yaya_cfg);
-					const p : string = path.normalize(path.join(base, filename));
-					if (path.relative(fileURLToPath(textDocument.uri), p).length == 0) {
-						let severity : DiagnosticSeverity = DiagnosticSeverity.Warning;
-						if (message === 'unused variable:' || message === 'unused function:') {
-							severity = DiagnosticSeverity.Information;
-						}
-						const range : Range = { start: { line: line - 1, character: col - 1 },
-						end: { line: line - 1, character: col + varname.length - 1 } };
-						const diagnostic: Diagnostic = {
-							severity: severity,
-							range: range,
-							message: `${message} ${varname}`,
-							source: 'yayalint'
-						};
-						diagnostics.push(diagnostic);
-					}
+		yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
+	});
+	const diagnostics : Diagnostic[] = [];
+	for (const l of yayalint_charge.split(/(?:\r\n|\r|\n)/)) {
+		const data  = l.split(/\t/);
+		const message : string = data[0];
+		if (message === 'read undefined variable:' || message === 'read undefined function:' || message === 'unused variable:' || message === 'unused function:') {
+			const varname : string = data[1];
+			const filename : string = data[3];
+			const position : string[] = data[5].split(/:/);
+			const line : integer = parseInt(position[0]);
+			const col : integer = parseInt(position[1]);
+			const base : string = path.dirname(yaya_cfg);
+			const p : string = path.normalize(path.join(base, filename));
+			if (path.relative(fileURLToPath(textDocument.uri), p).length == 0) {
+				let severity : DiagnosticSeverity = DiagnosticSeverity.Warning;
+				if (message === 'unused variable:' || message === 'unused function:') {
+					severity = DiagnosticSeverity.Information;
 				}
+				const range : Range = {
+										start: 	{ line: line - 1, character: col - 1 },
+										end: 	{ line: line - 1, character: col + varname.length - 1 }
+									 };
+				const diagnostic: Diagnostic = {
+					severity: severity,
+					range: range,
+					message: `${message} ${varname}`,
+					source: 'yayalint'
+				};
+				diagnostics.push(diagnostic);
 			}
-			connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-			connection.window.showInformationMessage('Completed yayalint');
-		});
-	})
+		}
+	}
+	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+	connection.window.showInformationMessage('Completed yayalint');
 }
 
 connection.onDidChangeWatchedFiles(_change => {
