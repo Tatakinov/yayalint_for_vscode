@@ -1,0 +1,5 @@
+{
+    "yayalint.yayalint_path.description": "path to yayalint.exe",
+    "yayalint.yaya_cfg.description": "path to yaya.txt",
+    "yayalint.trace.server.description": "Traces the communication between VS Code and the language server."
+}
