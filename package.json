@@ -30,13 +30,13 @@
 					"scope": "resource",
 					"type": "string",
 					"default": "",
-					"description": "path to yayalint"
+					"description": "%yayalint.yayalint_path.description%"
 				},
 				"yayalint.yaya_cfg": {
 					"scope": "resource",
 					"type": "string",
 					"default": "",
-					"description": "path to yaya.txt"
+					"description": "%yayalint.yaya_cfg.description%"
 				},
 				"yayalint.trace.server": {
 					"scope": "window",
@@ -47,7 +47,7 @@
 						"verbose"
 					],
 					"default": "off",
-					"description": "Traces the communication between VS Code and the language server."
+					"description": "%yayalint.trace.server.description%"
 				}
 			}
 		}
@@ -67,6 +67,10 @@
 		"@typescript-eslint/parser": "^5.30.0",
 		"eslint": "^8.13.0",
 		"mocha": "^9.2.1",
-		"typescript": "^4.7.2"
+		"typescript": "^4.7.2",
+		"vscode-nls-dev": "^4.0.0"
+	},
+	"dependencies": {
+		"vscode-nls": "^5.0.0"
 	}
 }
