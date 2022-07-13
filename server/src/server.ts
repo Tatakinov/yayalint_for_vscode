@@ -101,7 +101,7 @@ const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
 
 
 let yayalint_charge:string;
-async function update_yayalint_charge(settings:Thenable<ExampleSettings>): Promise<void> {
+async function update_yayalint_charge(settings:ExampleSettings): Promise<void> {
 	if (settings.yayalint_path.length == 0) {
 		connection.window.showInformationMessage('yayalint_path is not configured.');
 		return;
@@ -130,6 +130,7 @@ async function update_yayalint_charge(settings:Thenable<ExampleSettings>): Promi
 			}
 			yayalint_charge=stdout;
 		});
+		connection.window.showInformationMessage('yayalint charge updated.');
 	})
 }
 async function update_yayalint_charge_by_doc(textDocument:TextDocument): Promise<void> {
@@ -181,18 +182,15 @@ documents.onDidChangeContent(change => {
 		isOpened.set(change.document.uri, true);
 		validateTextDocument(change.document);
 	}
-	else
-	{
-		update_yayalint_charge_by_doc(change.document);
-	}
 });
 
 documents.onDidSave(change =>{
+	update_yayalint_charge_by_doc(change.document);
 	validateTextDocument(change.document);
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-	let yaya_cfg;
+	let yaya_cfg:string="";
 	const settings = await getDocumentSettings(textDocument.uri);
 	connection.workspace.getWorkspaceFolders().then(folders => {
 		if (!folders || folders.length == 0) {
@@ -200,6 +198,12 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		}
 		yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
 	});
+	if (!yayalint_charge || yayalint_charge.length == 0) {
+		update_yayalint_charge(settings);
+		if(!yayalint_charge || yayalint_charge.length == 0) {
+			return;
+		}
+	}
 	const diagnostics : Diagnostic[] = [];
 	for (const l of yayalint_charge.split(/(?:\r\n|\r|\n)/)) {
 		const data  = l.split(/\t/);
@@ -232,7 +236,12 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		}
 	}
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-	connection.window.showInformationMessage('Completed yayalint');
+	if(diagnostics.length > 0) {
+		connection.window.showInformationMessage('Completed yayalint, Num: ' + diagnostics.length);
+	}
+	else {
+		connection.window.showInformationMessage('There isn\'t any yayalint info');
+	}
 }
 
 connection.onDidChangeWatchedFiles(_change => {
