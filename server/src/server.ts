@@ -99,8 +99,8 @@ const isOpened: Map<string,boolean> = new Map<string, boolean>();
 // Cache the settings of all open documents
 const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
 
+var yayalint_charge:Array<string>;
 
-let yayalint_charge:string;
 async function update_yayalint_charge(settings:ExampleSettings): Promise<void> {
 	if (settings.yayalint_path.length == 0) {
 		connection.window.showInformationMessage('yayalint_path is not configured.');
@@ -128,7 +128,11 @@ async function update_yayalint_charge(settings:ExampleSettings): Promise<void> {
 				connection.window.showErrorMessage(stderr);
 				return;
 			}
-			yayalint_charge=stdout;
+			for (const l of stdout.split(/(?:\r\n|\r|\n)/)) {
+				if (l.length > 0) {
+					yayalint_charge.push(l);
+				}
+			}
 		});
 		connection.window.showInformationMessage('yayalint charge updated.');
 	})
@@ -198,14 +202,15 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 		}
 		yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
 	});
-	if (!yayalint_charge || yayalint_charge.length == 0) {
+	if (!yayalint_charge) {
 		update_yayalint_charge(settings);
-		if(!yayalint_charge || yayalint_charge.length == 0) {
+		if(!yayalint_charge) {
+			connection.window.showInformationMessage('Failed to update yayalint charge.');
 			return;
 		}
 	}
 	const diagnostics : Diagnostic[] = [];
-	for (const l of yayalint_charge.split(/(?:\r\n|\r|\n)/)) {
+	for (const l of yayalint_charge) {
 		const data  = l.split(/\t/);
 		const message : string = data[0];
 		if (message === 'read undefined variable:' || message === 'read undefined function:' || message === 'unused variable:' || message === 'unused function:') {
