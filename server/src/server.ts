@@ -110,8 +110,6 @@ async function update_yayalint_charge(settings:ExampleSettings): Promise<void> {
 		connection.window.showInformationMessage('yaya_cfg is not configured.');
 		return;
 	}
-	//const yaya_cfg as string from settings.yaya_cfg, if it's relative path, completes it based on the workspace path.
-	//workspace path: vscode.workspace.workspaceFolders[0].uri.path
 	connection.workspace.getWorkspaceFolders().then(folders => {
 		if (!folders || folders.length == 0) {
 			return;
@@ -128,13 +126,9 @@ async function update_yayalint_charge(settings:ExampleSettings): Promise<void> {
 				connection.window.showErrorMessage(stderr);
 				return;
 			}
-			for (const l of stdout.split(/(?:\r\n|\r|\n)/)) {
-				if (l.length > 0) {
-					yayalint_charge.push(l);
-				}
-			}
+			yayalint_charge=stdout.split(/(?:\r\n|\r|\n)/).filter(line => line.length > 0);
+			connection.window.showInformationMessage('yayalint charge updated with ' + yayalint_charge.length + ' lines.');
 		});
-		connection.window.showInformationMessage('yayalint charge updated.');
 	})
 }
 async function update_yayalint_charge_by_doc(textDocument:TextDocument): Promise<void> {
