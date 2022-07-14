@@ -137,6 +137,7 @@ async function analysis(str:string, base:string) {
 			}
 		}
 	}
+	connection.window.showInformationMessage('yayalint analysis finished with ' + analysisResult.size + ' hints.');
 }
 
 async function update_yayalint_charge(settings:YayalintSettings): Promise<void> {
@@ -151,6 +152,7 @@ async function update_yayalint_charge(settings:YayalintSettings): Promise<void> 
 		throw new Error('workspace not found');
 	}
 	const yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
+	connection.window.showInformationMessage(`Updating yayalint charge: "${settings.yayalint_path}" "${yaya_cfg}"`);
 	const { stdout, stderr }	= await exec(`"${settings.yayalint_path}" "${yaya_cfg}"`);
 	if (stderr && stderr.length > 0) {
 		throw new Error(stderr);
@@ -158,7 +160,6 @@ async function update_yayalint_charge(settings:YayalintSettings): Promise<void> 
 	if (stdout && stdout.length > 0) {
 		await analysis(stdout, path.dirname(yaya_cfg));
 	}
-	connection.window.showInformationMessage(`Updating yayalint charge: "${settings.yayalint_path}" "${yaya_cfg}"`);
 }
 
 async function update_yayalint_charge_by_doc(textDocument:TextDocument): Promise<void> {
