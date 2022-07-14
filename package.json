@@ -3,7 +3,7 @@
 	"description": "yayalint for vscode",
 	"author": "tatakinov",
 	"license": "MIT",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"icon": "icon.png",
 	"repository": {
 		"type": "git",
