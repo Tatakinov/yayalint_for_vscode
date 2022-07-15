@@ -7,8 +7,8 @@
     "yayalint.analysis.error.not_configured.yaya_cfg": "yaya_cfg没有被配置。",
     "yayalint.analysis.error.no_workspace_folder": "没有找到工作区文件夹。",
     "yayalint.analysis.message.charge_updateing.header": "更新yayalint缓存：",
-    "yayalint.analysis.info.unused_variable": "unused variable: %s",
-    "yayalint.analysis.info.unused_function": "unused function: %s",
-    "yayalint.analysis.warning.undefined_variable": "undefined variable: %s",
-    "yayalint.analysis.warning.undefined_function": "undefined function: %s"
+    "yayalint.analysis.info.unused_variable": "未使用的变量：%s",
+    "yayalint.analysis.info.unused_function": "未使用的函数：%s",
+    "yayalint.analysis.warning.undefined_variable": "未定义的变量：%s",
+    "yayalint.analysis.warning.undefined_function": "未定义的函数：%s"
 }
