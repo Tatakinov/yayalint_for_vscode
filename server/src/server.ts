@@ -24,6 +24,9 @@ const exec	= util.promisify(require('node:child_process').exec);
 import path = require('path');
 import { fileURLToPath } from 'url';
 
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
+
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
@@ -137,20 +140,29 @@ async function analysis(str:string, base:string) {
 			}
 		}
 	}
+	let info=localize('yayalint.analysis.complete', 'yayalint analysis finished with {0} hints.');
+	connection.window.showInformationMessage(info.replace('{0}', analysisResult.size.toString()));
 }
 
 async function update_yayalint_charge(settings:YayalintSettings): Promise<void> {
 	if (settings.yayalint_path.length == 0) {
-		throw new Error('yayalint_path is not configured');
+		//'yayalint_path is not configured'
+		throw new Error(localize('yayalint.analysis.error.not_configured.yayalint_path', 'yayalint_path is not configured.'));
 	}
 	if (settings.yaya_cfg.length == 0) {
-		throw new Error('yaya_cfg is not configured');
+		//'yaya_cfg is not configured'
+		throw new Error(localize('yayalint.analysis.error.not_configured.yaya_cfg', 'yaya_cfg is not configured.'));
 	}
 	const folders = await connection.workspace.getWorkspaceFolders();
 	if (!folders || folders.length == 0) {
-		throw new Error('workspace not found');
+		//'no workspace folder'
+		throw new Error(localize('yayalint.analysis.error.no_workspace_folder', 'No workspace folder found.'));
 	}
 	const yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
+	{
+		let header=localize('yayalint.analysis.message.charge_updateing.header', 'Updating yayalint charge:');
+		connection.window.showInformationMessage(`${header} "${settings.yayalint_path}" "${yaya_cfg}"`);
+	}
 	const { stdout, stderr }	= await exec(`"${settings.yayalint_path}" "${yaya_cfg}"`);
 	if (stderr && stderr.length > 0) {
 		throw new Error(stderr);
@@ -158,7 +170,6 @@ async function update_yayalint_charge(settings:YayalintSettings): Promise<void> 
 	if (stdout && stdout.length > 0) {
 		await analysis(stdout, path.dirname(yaya_cfg));
 	}
-	connection.window.showInformationMessage(`Updating yayalint charge: "${settings.yayalint_path}" "${yaya_cfg}"`);
 }
 
 async function update_yayalint_charge_by_doc(textDocument:TextDocument): Promise<void> {

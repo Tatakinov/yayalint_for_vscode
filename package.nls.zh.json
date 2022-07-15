@@ -1,0 +1,10 @@
+{
+    "yayalint.yayalint_path.description": "yayalint.exe的路径",
+    "yayalint.yaya_cfg.description": "yaya.txt的路径",
+    "yayalint.trace.server.description": "如何追踪VS Code和语言服务器之间的通信",
+    "yayalint.analysis.complete": "yayalint分析完毕，有{0}条提示。",
+    "yayalint.analysis.error.not_configured.yayalint_path": "yayalint_path没有被配置。",
+    "yayalint.analysis.error.not_configured.yaya_cfg": "yaya_cfg没有被配置。",
+    "yayalint.analysis.error.no_workspace_folder": "没有找到工作区文件夹。",
+    "yayalint.analysis.message.charge_updateing.header": "更新yayalint缓存："
+}

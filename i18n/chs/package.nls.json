@@ -1,5 +1,0 @@
-{
-    "yayalint.yayalint_path.description": "yayalint.exe的路径",
-    "yayalint.yaya_cfg.description": "yaya.txt的路径",
-    "yayalint.trace.server.description": "如何追踪VS Code和语言服务器之间的通信。"
-}

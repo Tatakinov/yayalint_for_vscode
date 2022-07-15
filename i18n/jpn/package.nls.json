@@ -1,5 +1,0 @@
-{
-    "yayalint.yayalint_path.description": "yayalint.exeへのパス",
-    "yayalint.yaya_cfg.description": "yaya.txtへのパス",
-    "yayalint.trace.server.description": "VS Codeとランゲージサーバー間の通信をトレースする方法。"
-}
