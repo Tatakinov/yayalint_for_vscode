@@ -6,5 +6,9 @@
     "yayalint.analysis.error.not_configured.yayalint_path": "yayalint_path没有被配置。",
     "yayalint.analysis.error.not_configured.yaya_cfg": "yaya_cfg没有被配置。",
     "yayalint.analysis.error.no_workspace_folder": "没有找到工作区文件夹。",
-    "yayalint.analysis.message.charge_updateing.header": "更新yayalint缓存："
+    "yayalint.analysis.message.charge_updateing.header": "更新yayalint缓存：",
+    "yayalint.analysis.info.unused_variable": "unused variable: %s",
+    "yayalint.analysis.info.unused_function": "unused function: %s",
+    "yayalint.analysis.warning.undefined_variable": "undefined variable: %s",
+    "yayalint.analysis.warning.undefined_function": "undefined function: %s"
 }

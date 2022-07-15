@@ -124,6 +124,12 @@ const once:Map<string, boolean> = new Map<string, boolean>();
 const documentSettings: Map<string, Thenable<YayalintSettings>> = new Map();
 
 async function analysis(str:string, base:string) {
+	const message2resource	= {
+		"unused variable:": "yayalint.analysis.info.unused_variable",
+		"unused function:": "yayalint.analysis.info.unused_function",
+		"read undefined variable:": "yayalint.analysis.warning.undefined_variable",
+		"read undefined function:": "yayalint.analysis.warning.undefined_function",
+	}
 	analysisResult.clear();
 	for (const l of str.split(/(?:\r\n|\r|\n)/).filter(line => line.length > 0)) {
 		const data  = l.split(/\t/);
@@ -151,7 +157,7 @@ async function analysis(str:string, base:string) {
 				const diagnostic: Diagnostic = {
 					severity: severity,
 					range: range,
-					message: `${message} ${varname}`,
+					message: localize(message2resource[message], message + ' %s', varname),
 					source: 'yayalint'
 				};
 				diagnostics.push(diagnostic);

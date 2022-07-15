@@ -6,5 +6,9 @@
     "yayalint.analysis.error.not_configured.yayalint_path": "yayalint_pathが設定されていません。",
     "yayalint.analysis.error.not_configured.yaya_cfg": "yaya_cfgは設定されていません。",
     "yayalint.analysis.error.no_workspace_folder": "ワークスペースフォルダが見つかりませんでした。",
-    "yayalint.analysis.message.charge_updateing.header": "yayalintのキャッシュを更新中："
+    "yayalint.analysis.message.charge_updateing.header": "yayalintのキャッシュを更新中：",
+    "yayalint.analysis.info.unused_variable": "未使用の変数: %s",
+    "yayalint.analysis.info.unused_function": "未使用の関数: %s",
+    "yayalint.analysis.warning.undefined_variable": "未定義の変数: %s",
+    "yayalint.analysis.warning.undefined_function": "未定義の関数: %s"
 }
