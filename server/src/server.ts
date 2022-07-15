@@ -202,6 +202,7 @@ async function update_yayalint_charge_by_doc(textDocument:TextDocument): Promise
 	await update_yayalint_charge(settings);
 }
 
+
 connection.onDidChangeConfiguration(change => {
 	if (hasConfigurationCapability) {
 		// Reset all cached document settings
@@ -212,12 +213,15 @@ connection.onDidChangeConfiguration(change => {
 		);
 	}
 
-	// Revalidate all open text documents
-	update_yayalint_charge(change.settings).then(() => {
-		documents.all().forEach(validateTextDocument);
-	}).catch(error => {
-		connection.window.showErrorMessage(error.message);
-	});
+	for (const document of documents.all()) {
+		// Revalidate all open text documents
+		update_yayalint_charge_by_doc(document).then(() => {
+			documents.all().forEach(validateTextDocument);
+		}).catch(error => {
+			connection.window.showErrorMessage(error.message);
+		});
+		break;
+	}
 });
 
 function getDocumentSettings(resource: string): Thenable<YayalintSettings> {
