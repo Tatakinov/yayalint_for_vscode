@@ -23,9 +23,27 @@ const util	= require('node:util');
 const exec	= util.promisify(require('node:child_process').exec);
 import path = require('path');
 import { fileURLToPath } from 'url';
+import * as fs from 'fs';
 
-import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+function localizeTable() {
+	const nls	= JSON.parse(process.env.VSCODE_NLS_CONFIG || "");
+	const locale	= nls.locale || "generic";
+	try {
+		const data	= fs.readFileSync(path.join(__dirname, "..", "..", `package.nls.${locale}.json`));
+		return JSON.parse(data.toString());
+	}
+	catch (error) {
+		const data	= fs.readFileSync(path.join(__dirname, "..", "..", `package.nls.json`));
+		return JSON.parse(data.toString());
+	}
+}
+
+const localize_table = localizeTable();
+
+function localize(key:string, fmt:string, ...args:any[]):string {
+	const format	= localize_table[key] || fmt;
+	return util.format(format, ...args);
+}
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
