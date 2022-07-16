@@ -3,12 +3,21 @@
     "yayalint.yaya_cfg.description": "path to yaya.txt",
     "yayalint.trace.server.description": "Traces the communication between VS Code and the language server.",
     "yayalint.analysis.complete": "yayalint analysis finished with {0} hints.",
+
     "yayalint.analysis.error.not_configured.yayalint_path": "yayalint_path is not configured.",
     "yayalint.analysis.error.not_configured.yaya_cfg": "yaya_cfg is not configured.",
     "yayalint.analysis.error.no_workspace_folder": "No workspace folder found.",
     "yayalint.analysis.message.charge_updateing.header": "Updating yayalint charge:",
+    
     "yayalint.analysis.info.unused_variable": "unused variable: %s",
     "yayalint.analysis.info.unused_function": "unused function: %s",
     "yayalint.analysis.warning.undefined_variable": "undefined variable: %s",
-    "yayalint.analysis.warning.undefined_function": "undefined function: %s"
+    "yayalint.analysis.warning.undefined_function": "undefined function: %s",
+    "yayalint.analysis.warning.case_statement_contains_not_when_or_other": "case statement contains a clause that is neither a when clause nor others clause: %s",
+    "yayalint.analysis.warning.dic_not_found": "dic not found: %s",
+    "yayalint.analysis.warning.dicdir_not_found": "dicdir not found: %s",
+    "yayalint.analysis.info.not_include_line_in_dicdir_config_file": "not include line in dicdir config file: %s",
+    "yayalint.analysis.info.double_quoted_string_that_can_convert_to_single_quoted": "double quoted string that can convert to single quoted: %s",
+    "yayalint.analysis.warning.single_quoted_string_that_may_need_double_quoted": "single quoted string that may need double quoted: %s",
+    "yayalint.analysis.warning.maybe_unstopable_loop": "maybe unstopable loop: %s"
 }
