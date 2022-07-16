@@ -29,7 +29,7 @@ function localizeTable() {
 	const nls	= JSON.parse(process.env.VSCODE_NLS_CONFIG || "");
 	const locale	= nls.locale || "generic";
 	try {
-		const data	= fs.readFileSync(path.join(__dirname, "..", "..", `package.nls.${locale}.json`));
+		const data	= fs.readFileSync(path.join(__dirname, "..", "..", `package.nls.${locale.replace(/-.*/, '')}.json`));
 		return JSON.parse(data.toString());
 	}
 	catch (error) {
