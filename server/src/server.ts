@@ -22,7 +22,7 @@ import { ExecException } from 'child_process';
 const util	= require('node:util');
 const exec	= util.promisify(require('node:child_process').exec);
 import path = require('path');
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import * as fs from 'fs';
 
 function localizeTable() {
@@ -293,12 +293,18 @@ async function hideDiagnostic(textDocument: TextDocument): Promise<void> {
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const documentUri	= fileURLToPath(textDocument.uri);
 	for (const p of analysisResult.keys()) {
+		/*
 		if (path.relative(documentUri, p).length == 0) {
 			const diagnostics:Diagnostic[] | undefined	= analysisResult.get(p);
 			if (diagnostics) {
 				connection.sendDiagnostics({uri: textDocument.uri, diagnostics});
 			}
 			break;
+		}
+		*/
+		const diagnostics:Diagnostic[] | undefined	= analysisResult.get(p);
+		if (diagnostics) {
+			connection.sendDiagnostics({uri: pathToFileURL(p).toString(), diagnostics});
 		}
 	}
 }
