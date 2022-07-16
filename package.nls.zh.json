@@ -19,5 +19,17 @@
     "yayalint.analysis.info.not_include_line_in_dicdir_config_file": "dicdir配置文件中的非include行：%s",
     "yayalint.analysis.info.double_quoted_string_that_can_convert_to_single_quoted": "可以转换为单引号的双引号字符串：%s",
     "yayalint.analysis.warning.single_quoted_string_that_may_need_double_quoted": "可能需要双引号的单引号字符串：%s",
-    "yayalint.analysis.warning.maybe_unstopable_loop": "也许无法停止的循环：%s"
+    "yayalint.analysis.warning.maybe_unstopable_loop": "也许无法停止的循环：%s",
+
+    "yayalint.quickfix.unused_variable.remove": "删除这个未使用的变量",
+    "yayalint.quickfix.unused_function.remove": "删除这个未使用的函数",
+    "yayalint.quickfix.undefined_variable.add": "添加这个变量的定义",
+    "yayalint.quickfix.undefined_function.add.before": "在当前函数之前添加该函数的定义",
+    "yayalint.quickfix.undefined_function.add.after": "在当前函数之后添加该函数的定义",
+    "yayalint.quickfix.dic_not_found.add": "新建此dic文件",
+    "yayalint.quickfix.dic_not_found.remove": "删除此行",
+    "yayalint.quickfix.dicdir_not_found.add": "新建这个dicdir",
+    "yayalint.quickfix.dicdir_not_found.remove": "删除此行",
+    "yayalint.quickfix.single_quoted_string_that_may_need_double_quoted.convert": "转换为双引号字符串",
+    "yayalint.quickfix.double_quoted_string_that_can_convert_to_single_quoted.convert": "转换为单引号字符串"
 }

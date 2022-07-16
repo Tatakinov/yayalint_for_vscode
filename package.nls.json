@@ -19,5 +19,17 @@
     "yayalint.analysis.info.not_include_line_in_dicdir_config_file": "not include line in dicdir config file: %s",
     "yayalint.analysis.info.double_quoted_string_that_can_convert_to_single_quoted": "double quoted string that can convert to single quoted: %s",
     "yayalint.analysis.warning.single_quoted_string_that_may_need_double_quoted": "single quoted string that may need double quoted: %s",
-    "yayalint.analysis.warning.maybe_unstopable_loop": "maybe unstopable loop: %s"
+    "yayalint.analysis.warning.maybe_unstopable_loop": "maybe unstopable loop: %s",
+
+    "yayalint.quickfix.unused_variable.remove": "Remove this unused variable",
+    "yayalint.quickfix.unused_function.remove": "Remove this unused function",
+    "yayalint.quickfix.undefined_variable.add": "Add this variable's definition",
+    "yayalint.quickfix.undefined_function.add.before": "Add this function's definition before current one",
+    "yayalint.quickfix.undefined_function.add.after": "Add this function's definition after current one",
+    "yayalint.quickfix.dic_not_found.add": "Add this dic",
+    "yayalint.quickfix.dic_not_found.remove": "Remove this line",
+    "yayalint.quickfix.dicdir_not_found.add": "Add this dicdir",
+    "yayalint.quickfix.dicdir_not_found.remove": "Remove this line",
+    "yayalint.quickfix.single_quoted_string_that_may_need_double_quoted.convert": "Convert to double quoted string",
+    "yayalint.quickfix.double_quoted_string_that_can_convert_to_single_quoted.convert": "Convert to single quoted string"
 }
