@@ -19,5 +19,17 @@
     "yayalint.analysis.info.not_include_line_in_dicdir_config_file": "dicdir構成ファイル内の非インクルード行: %s",
     "yayalint.analysis.info.double_quoted_string_that_can_convert_to_single_quoted": "シングルクォートに変換可能なダブルクォート文字列：%s",
     "yayalint.analysis.warning.single_quoted_string_that_may_need_double_quoted": "二重引用符が必要な一重引用符文字列：%s",
-    "yayalint.analysis.warning.maybe_unstopable_loop": "停止しない可能性のあるループ：%s"
+    "yayalint.analysis.warning.maybe_unstopable_loop": "停止しない可能性のあるループ：%s",
+
+    "yayalint.quickfix.unused_variable.remove": "この未使用の変数を削除する",
+    "yayalint.quickfix.unused_function.remove": "この未使用の機能を削除する",
+    "yayalint.quickfix.undefined_variable.add": "この変数の定義を追加する",
+    "yayalint.quickfix.undefined_function.add.before": "現在の関数の前に関数の定義を追加する",
+    "yayalint.quickfix.undefined_function.add.after": "現在の関数の後に関数の定義を追加する",
+    "yayalint.quickfix.dic_not_found.add": "この新しいdicファイルを作成する",
+    "yayalint.quickfix.dic_not_found.remove": "この行を削除する",
+    "yayalint.quickfix.dicdir_not_found.add": "この新しいdicdirを作成する",
+    "yayalint.quickfix.dicdir_not_found.remove": "この行を削除する",
+    "yayalint.quickfix.single_quoted_string_that_may_need_double_quoted.convert": "二重引用符で囲まれた文字列に変換する",
+    "yayalint.quickfix.double_quoted_string_that_can_convert_to_single_quoted.convert": "一重引用符で囲まれた文字列に変換する"
 }
