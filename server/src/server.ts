@@ -259,12 +259,14 @@ documents.onDidChangeContent(change => {
 		}
 		const uri	= folders[0].uri
 		if (once.has(uri)) {
-			validateTextDocument(change.document);
+			documents.all().forEach(ClearDiagnostic);
+			validateTextDocument();
 		}
 		else {
 			once.set(uri, true);
 			update_yayalint_charge_by_doc(change.document).then(() => {
-				validateTextDocument(change.document);
+				documents.all().forEach(ClearDiagnostic);
+				validateTextDocument();
 			}).catch(error => {
 				connection.window.showErrorMessage(error.message);
 			});
@@ -275,7 +277,7 @@ documents.onDidChangeContent(change => {
 documents.onDidSave(change =>{
 	update_yayalint_charge_by_doc(change.document).then(() => {
 		documents.all().forEach(ClearDiagnostic);
-		documents.all().forEach(validateTextDocument);
+		validateTextDocument();
 	}).catch((error) => {
 		connection.window.showErrorMessage(error.message);
 	});
@@ -285,8 +287,7 @@ async function ClearDiagnostic(textDocument: TextDocument): Promise<void> {
 	connection.sendDiagnostics({uri: textDocument.uri, diagnostics: []});
 }
 
-async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-	const documentUri	= fileURLToPath(textDocument.uri);
+async function validateTextDocument(): Promise<void> {
 	for (const p of analysisResult.keys()) {
 		const diagnostics:Diagnostic[] | undefined	= analysisResult.get(p);
 		if (diagnostics) {
