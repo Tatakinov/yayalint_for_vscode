@@ -8,14 +8,18 @@
     "yayalint.analysis.error.not_configured.yaya_cfg": "yaya_cfgは設定されていません。",
     "yayalint.analysis.error.no_workspace_folder": "ワークスペースフォルダが見つかりませんでした。",
     "yayalint.analysis.message.charge_updateing.header": "yayalintのキャッシュを更新中：",
+    
+    "yayalint.analysis.error.invalid_format": "この解析行のフォーマットは無効です：{0}",
 
     "yayalint.analysis.info.unused_variable": "未使用の変数: {0}",
     "yayalint.analysis.info.unused_function": "未使用の関数: {0}",
     "yayalint.analysis.warning.undefined_variable": "未定義の変数: {0}",
     "yayalint.analysis.warning.undefined_function": "未定義の関数: {0}",
     "yayalint.analysis.warning.case_statement_contains_not_when_or_other": "case文にwhen節でもothers節でもない節が含まれています: {0}",
+    "yayalint.analysis.warning.assign_in_conditional_statement": "条件式に代入文が含まれています: {0}",
     "yayalint.analysis.warning.dic_not_found": "dicファイルが見つかりません: {0}",
     "yayalint.analysis.warning.dicdir_not_found": "dicdirが見つかりません: {0}",
+    "yayalint.analysis.warning.dic_or_dicdir_not_found": "dicファイルもdicdirも見つかりません: {0}",
     "yayalint.analysis.info.not_include_line_in_dicdir_config_file": "dicdir構成ファイル内の非インクルード行: {0}",
     "yayalint.analysis.info.double_quoted_string_that_can_convert_to_single_quoted": "シングルクォートに変換可能なダブルクォート文字列：{0}",
     "yayalint.analysis.warning.single_quoted_string_that_may_need_double_quoted": "二重引用符が必要な一重引用符文字列：{0}",
