@@ -2,7 +2,7 @@
     "yayalint.yayalint_path.description": "path to yayalint.exe",
     "yayalint.yaya_cfg.description": "path to yaya.txt",
     "yayalint.trace.server.description": "Traces the communication between VS Code and the language server.",
-    "yayalint.analysis.complete": "yayalint analysis finished with {0} hints.",
+    "yayalint.analysis.complete": "yayalint analysis finished with {0} hints for {1} files.",
 
     "yayalint.analysis.error.not_configured.yayalint_path": "yayalint_path is not configured.",
     "yayalint.analysis.error.not_configured.yaya_cfg": "yaya_cfg is not configured.",

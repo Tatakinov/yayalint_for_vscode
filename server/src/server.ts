@@ -131,6 +131,7 @@ async function analysis(str:string, base:string) {
 		"read undefined function:": "yayalint.analysis.warning.undefined_function",
 	}
 	analysisResult.clear();
+	let diagnostic_number = 0;
 	for (const l of str.split(/(?:\r\n|\r|\n)/).filter(line => line.length > 0)) {
 		const data  = l.split(/\t/);
 		const message : string = data[0];
@@ -161,11 +162,12 @@ async function analysis(str:string, base:string) {
 					source: 'yayalint'
 				};
 				diagnostics.push(diagnostic);
+				diagnostic_number++;
 			}
 		}
 	}
-	let info=localize('yayalint.analysis.complete', 'yayalint analysis finished with {0} hints.');
-	connection.window.showInformationMessage(info.replace('{0}', analysisResult.size.toString()));
+	let info=localize('yayalint.analysis.complete', 'yayalint analysis finished with {0} hints for {1} files.');
+	connection.window.showInformationMessage(info.replace('{0}', diagnostic_number.toString()).replace('{1}', analysisResult.size.toString()));
 }
 
 async function update_yayalint_charge(settings:YayalintSettings): Promise<void> {
