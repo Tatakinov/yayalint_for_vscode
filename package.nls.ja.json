@@ -2,7 +2,7 @@
     "yayalint.yayalint_path.description": "yayalint.exeへのパス",
     "yayalint.yaya_cfg.description": "yaya.txtへのパス",
     "yayalint.trace.server.description": "VS Codeとランゲージサーバー間の通信をトレースする方法",
-    "yayalint.analysis.complete": "yayalintの解析が完了し、{0}のヒントを得ました。",
+    "yayalint.analysis.complete": "yayalintの解析が完了し、{1}ファイルに対する合計{0}個のヒントが得られました。",
 
     "yayalint.analysis.error.not_configured.yayalint_path": "yayalint_pathが設定されていません。",
     "yayalint.analysis.error.not_configured.yaya_cfg": "yaya_cfgは設定されていません。",

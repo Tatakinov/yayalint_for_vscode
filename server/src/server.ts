@@ -131,6 +131,7 @@ async function analysis(str:string, base:string) {
 		"read undefined function:": "yayalint.analysis.warning.undefined_function",
 	}
 	analysisResult.clear();
+	let diagnostic_number = 0;
 	for (const l of str.split(/(?:\r\n|\r|\n)/).filter(line => line.length > 0)) {
 		const data  = l.split(/\t/);
 		const message : string = data[0];
@@ -161,11 +162,12 @@ async function analysis(str:string, base:string) {
 					source: 'yayalint'
 				};
 				diagnostics.push(diagnostic);
+				diagnostic_number++;
 			}
 		}
 	}
-	let info=localize('yayalint.analysis.complete', 'yayalint analysis finished with {0} hints.');
-	connection.window.showInformationMessage(info.replace('{0}', analysisResult.size.toString()));
+	let info=localize('yayalint.analysis.complete', 'yayalint analysis finished with {0} hints for {1} files.');
+	connection.window.showInformationMessage(info.replace('{0}', diagnostic_number.toString()).replace('{1}', analysisResult.size.toString()));
 }
 
 async function update_yayalint_charge(settings:YayalintSettings): Promise<void> {
@@ -243,7 +245,6 @@ function getDocumentSettings(resource: string): Thenable<YayalintSettings> {
 documents.onDidClose(e => {
 	documentSettings.delete(e.document.uri);
 	isOpened.delete(e.document.uri);
-	hideDiagnostic(e.document);
 });
 
 // The content of a text document has changed. This event is emitted
@@ -273,35 +274,20 @@ documents.onDidChangeContent(change => {
 
 documents.onDidSave(change =>{
 	update_yayalint_charge_by_doc(change.document).then(() => {
+		documents.all().forEach(ClearDiagnostic);
 		documents.all().forEach(validateTextDocument);
 	}).catch((error) => {
 		connection.window.showErrorMessage(error.message);
 	});
 });
 
-async function hideDiagnostic(textDocument: TextDocument): Promise<void> {
-	const documentUri	= fileURLToPath(textDocument.uri);
-	for (const p of analysisResult.keys()) {
-		if (path.relative(documentUri, p).length == 0) {
-			const diagnostics:Diagnostic[]	= [];
-			connection.sendDiagnostics({uri: textDocument.uri, diagnostics});
-			break;
-		}
-	}
+async function ClearDiagnostic(textDocument: TextDocument): Promise<void> {
+	connection.sendDiagnostics({uri: textDocument.uri, diagnostics: []});
 }
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const documentUri	= fileURLToPath(textDocument.uri);
 	for (const p of analysisResult.keys()) {
-		/*
-		if (path.relative(documentUri, p).length == 0) {
-			const diagnostics:Diagnostic[] | undefined	= analysisResult.get(p);
-			if (diagnostics) {
-				connection.sendDiagnostics({uri: textDocument.uri, diagnostics});
-			}
-			break;
-		}
-		*/
 		const diagnostics:Diagnostic[] | undefined	= analysisResult.get(p);
 		if (diagnostics) {
 			connection.sendDiagnostics({uri: pathToFileURL(p).toString(), diagnostics});
