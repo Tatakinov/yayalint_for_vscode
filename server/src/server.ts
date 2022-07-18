@@ -41,8 +41,10 @@ function localizeTable() {
 const localize_table = localizeTable();
 
 function localize(key:string, fmt:string, ...args:any[]):string {
-	const format	= localize_table[key] || fmt;
-	return util.format(format, ...args);
+	const format:string	= localize_table[key] || fmt;
+	return format.replace(/\{(\d+)\}/g, (_match, n, _offset, _string, _groups) => {
+		return args[parseInt(n)];
+	});
 }
 
 // Create a connection for the server, using Node's IPC as a transport.
@@ -166,8 +168,8 @@ async function analysis(str:string, base:string) {
 			}
 		}
 	}
-	let info=localize('yayalint.analysis.complete', 'yayalint analysis finished with {0} hints for {1} files.');
-	connection.window.showInformationMessage(info.replace('{0}', diagnostic_number.toString()).replace('{1}', analysisResult.size.toString()));
+	let info=localize('yayalint.analysis.complete', 'yayalint analysis finished with {0} hints for {1} files.', diagnostic_number.toString(), analysisResult.size.toString());
+	connection.window.showInformationMessage(info);
 }
 
 async function update_yayalint_charge(settings:YayalintSettings): Promise<void> {
