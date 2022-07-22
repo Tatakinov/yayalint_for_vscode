@@ -18,7 +18,9 @@
 		"vscode": "^1.63.0"
 	},
 	"activationEvents": [
-		"onLanguage:aya"
+		"onLanguage:aya",
+		"onLanguage:aya-dicdir-confing",
+		"onLanguage:aya-base-confing"
 	],
 	"main": "./client/out/extension",
 	"contributes": {

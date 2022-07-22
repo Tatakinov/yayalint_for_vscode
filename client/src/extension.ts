@@ -33,7 +33,7 @@ export function activate(context: ExtensionContext) {
 	// Options to control the language client
 	const clientOptions: LanguageClientOptions = {
 		// Register the server for plain text documents
-		documentSelector: [{ scheme: 'file', language: "aya" }],
+		documentSelector: [{ scheme: 'file', language: 'aya' }, { scheme: 'file', language: 'aya-dicdir-confing' }, { scheme: 'file', language: 'aya-base-confing' }],
 		synchronize: {
 			// Notify the server about file changes to '.clientrc files contained in the workspace
 			fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
