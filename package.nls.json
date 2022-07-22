@@ -24,6 +24,7 @@
     "yayalint.analysis.info.double_quoted_string_that_can_convert_to_single_quoted": "double quoted string that can convert to single quoted: {0}",
     "yayalint.analysis.warning.single_quoted_string_that_may_need_double_quoted": "single quoted string that may need double quoted: {0}",
     "yayalint.analysis.warning.maybe_unstopable_loop": "maybe unstopable loop: {0}",
+    "yayalint.analysis.error.syntax_error": "syntax error: {0}",
 
     "yayalint.quickfix.unused_variable.remove": "Remove this unused variable",
     "yayalint.quickfix.unused_function.remove": "Remove this unused function",

@@ -24,6 +24,7 @@
     "yayalint.analysis.info.double_quoted_string_that_can_convert_to_single_quoted": "二重引用符文字列を一重引用符に変換できる：{0}",
     "yayalint.analysis.warning.single_quoted_string_that_may_need_double_quoted": "二重引用符が必要な一重引用符文字列：{0}",
     "yayalint.analysis.warning.maybe_unstopable_loop": "停止しない可能性のあるループ：{0}",
+    "yayalint.analysis.error.syntax_error": "構文エラー: {0}",
 
     "yayalint.quickfix.unused_variable.remove": "この未使用の変数を削除する",
     "yayalint.quickfix.unused_function.remove": "この未使用の関数を削除する",

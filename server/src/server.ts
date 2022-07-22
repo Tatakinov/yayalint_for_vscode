@@ -125,55 +125,70 @@ const once:Map<string, boolean> = new Map<string, boolean>();
 // Cache the settings of all open documents
 const documentSettings: Map<string, Thenable<YayalintSettings>> = new Map();
 
+interface MessageInfo {
+	resourceID:string,
+	severity:DiagnosticSeverity,
+}
+
 async function analysis(str:string, base:string) {
-	const message2resourceID = {
-		"unused variable:": "yayalint.analysis.info.unused_variable",
-		"unused function:": "yayalint.analysis.info.unused_function",
-		"read undefined variable:": "yayalint.analysis.warning.undefined_variable",
-		"read undefined function:": "yayalint.analysis.warning.undefined_function",
-		"case statement contains a clause that is neither a when clause nor others clause": "yayalint.analysis.warning.case_statement_contains_not_when_or_other",
-		"assinment operator exists in conditional statement": "yayalint.analysis.warning.assign_in_conditional_statement",
-		"dic not found": "yayalint.analysis.warning.dic_not_found",
-		"dicdir not found": "yayalint.analysis.warning.dicdir_not_found",
-		"not found": "yayalint.analysis.warning.dic_or_dicdir_not_found",
-	}
-	const message2severity	= {
-		"unused variable:": DiagnosticSeverity.Information,
-		"unused function:": DiagnosticSeverity.Information,
-		"read undefined variable:": DiagnosticSeverity.Warning,
-		"read undefined function:": DiagnosticSeverity.Warning,
-		"case statement contains a clause that is neither a when clause nor others clause": DiagnosticSeverity.Warning,
-		"assinment operator exists in conditional statement": DiagnosticSeverity.Warning,
-		"dic not found": DiagnosticSeverity.Warning,
-		"dicdir not found": DiagnosticSeverity.Warning,
-		"not found": DiagnosticSeverity.Warning,
-	}
+	const message2info = new Map<string, MessageInfo>([
+		["unused variable:", {resourceID: "yayalint.analysis.info.unused_variable", severity: DiagnosticSeverity.Information}],
+		["unused function:", {resourceID: "yayalint.analysis.info.unused_function", severity: DiagnosticSeverity.Information}],
+		["read undefined variable:", {resourceID: "yayalint.analysis.warning.undefined_variable", severity: DiagnosticSeverity.Warning}],
+		["read undefined function:", {resourceID: "yayalint.analysis.warning.undefined_function", severity: DiagnosticSeverity.Warning}],
+		["case statement contains a clause that is neither a when clause nor others clause:", {resourceID: "yayalint.analysis.warning.case_statement_contains_not_when_or_other", severity: DiagnosticSeverity.Warning}],
+		["assignment operator exists in conditional statement:", {resourceID: "yayalint.analysis.warning.assign_in_conditional_statement", severity: DiagnosticSeverity.Warning}],
+		["dic not found:", {resourceID: "yayalint.analysis.warning.dic_not_found", severity: DiagnosticSeverity.Warning}],
+		["dicdir not found:", {resourceID: "yayalint.analysis.warning.dicdir_not_found", severity: DiagnosticSeverity.Warning}],
+		["not found:", {resourceID: "yayalint.analysis.warning.dic_or_dicdir_not_found", severity: DiagnosticSeverity.Warning}],
+		["syntax error:", {resourceID: "yayalint.analysis.error.syntax_error", severity: DiagnosticSeverity.Error}],
+	]);
+	/*
+	const message2resourceID = new Map<string, string>([
+		["unused variable:", "yayalint.analysis.info.unused_variable"],
+		["unused function:", "yayalint.analysis.info.unused_function"],
+		["read undefined variable:", "yayalint.analysis.warning.undefined_variable"],
+		["read undefined function:", "yayalint.analysis.warning.undefined_function"],
+		["case statement contains a clause that is neither a when clause nor others clause:", "yayalint.analysis.warning.case_statement_contains_not_when_or_other"],
+		["assinment operator exists in conditional statement:", "yayalint.analysis.warning.assign_in_conditional_statement"],
+		["dic not found:", "yayalint.analysis.warning.dic_not_found"],
+		["dicdir not found:", "yayalint.analysis.warning.dicdir_not_found"],
+		["not found:", "yayalint.analysis.warning.dic_or_dicdir_not_found"],
+	]);
+	const message2severity	= new Map<string, DiagnosticSeverity>([
+		["unused variable:", DiagnosticSeverity.Information],
+		["unused function:", DiagnosticSeverity.Information],
+		["read undefined variable:", DiagnosticSeverity.Warning],
+		["read undefined function:", DiagnosticSeverity.Warning],
+		["case statement contains a clause that is neither a when clause nor others clause:", DiagnosticSeverity.Warning],
+		["assinment operator exists in conditional statement:", DiagnosticSeverity.Warning],
+		["dic not found:", DiagnosticSeverity.Warning],
+		["dicdir not found:", DiagnosticSeverity.Warning],
+		["not found:", DiagnosticSeverity.Warning],
+	]);
+	*/
 	analysisResult.clear();
 	let diagnostic_number = 0;
 	for (const l of str.split(/(?:\r\n|\r|\n)/).filter(line => line.length > 0)) {
 		const data  = l.split(/\t/);
-		if(data.length < 5) {
+		const message : string = data[0];
+		if ( ! message2info.has(message)) {
 			connection.window.showInformationMessage(localize("yayalint.analysis.error.invalid_format", "Invalid format line: {0}", l));
 			continue;
 		}
-		const message : string = data[0];
 		const varname : string = data[1];
 		const filename : string = data[3];
 		const position : string[] = data[5].split(/:/);
 		const line : integer = parseInt(position[0]);
 		const col : integer = parseInt(position[1]);
-		//if message is not a string, error
-		if(typeof message !== "string" || line < 1 || col < 1) {
-			connection.window.showInformationMessage(localize("yayalint.analysis.error.invalid_format", "Invalid format line: {0}", l));
-			continue;
-		}
 		const p : string = path.normalize(path.join(base, filename));
 		if (!analysisResult.has(p)) {
 			analysisResult.set(p, []);
 		}
 		const diagnostics:Diagnostic[] | undefined	= analysisResult.get(p);
 		if (diagnostics) {
-			let severity : DiagnosticSeverity = message2severity[message];
+			const info:MessageInfo	= message2info.get(message) || {resourceID: "yayalint.analysis.error.unreachable", severity: DiagnosticSeverity.Error};
+			const severity : DiagnosticSeverity = info.severity;
 			const range : Range = {
 									start: 	{ line: line - 1, character: col - 1 },
 									end: 	{ line: line - 1, character: col + varname.length - 1 }
@@ -181,7 +196,7 @@ async function analysis(str:string, base:string) {
 			const diagnostic: Diagnostic = {
 				severity: severity,
 				range: range,
-				message: localize(message2resourceID[message], message + ' {0}', varname),
+				message: localize(info.resourceID, message + ' {0}', varname),
 				source: 'yayalint'
 			};
 			diagnostics.push(diagnostic);
