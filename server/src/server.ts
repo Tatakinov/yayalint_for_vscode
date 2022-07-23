@@ -143,30 +143,6 @@ async function analysis(str:string, base:string) {
 		["not found:", {resourceID: "yayalint.analysis.warning.dic_or_dicdir_not_found", severity: DiagnosticSeverity.Warning}],
 		["syntax error:", {resourceID: "yayalint.analysis.error.syntax_error", severity: DiagnosticSeverity.Error}],
 	]);
-	/*
-	const message2resourceID = new Map<string, string>([
-		["unused variable:", "yayalint.analysis.info.unused_variable"],
-		["unused function:", "yayalint.analysis.info.unused_function"],
-		["read undefined variable:", "yayalint.analysis.warning.undefined_variable"],
-		["read undefined function:", "yayalint.analysis.warning.undefined_function"],
-		["case statement contains a clause that is neither a when clause nor others clause:", "yayalint.analysis.warning.case_statement_contains_not_when_or_other"],
-		["assinment operator exists in conditional statement:", "yayalint.analysis.warning.assign_in_conditional_statement"],
-		["dic not found:", "yayalint.analysis.warning.dic_not_found"],
-		["dicdir not found:", "yayalint.analysis.warning.dicdir_not_found"],
-		["not found:", "yayalint.analysis.warning.dic_or_dicdir_not_found"],
-	]);
-	const message2severity	= new Map<string, DiagnosticSeverity>([
-		["unused variable:", DiagnosticSeverity.Information],
-		["unused function:", DiagnosticSeverity.Information],
-		["read undefined variable:", DiagnosticSeverity.Warning],
-		["read undefined function:", DiagnosticSeverity.Warning],
-		["case statement contains a clause that is neither a when clause nor others clause:", DiagnosticSeverity.Warning],
-		["assinment operator exists in conditional statement:", DiagnosticSeverity.Warning],
-		["dic not found:", DiagnosticSeverity.Warning],
-		["dicdir not found:", DiagnosticSeverity.Warning],
-		["not found:", DiagnosticSeverity.Warning],
-	]);
-	*/
 	analysisResult.clear();
 	let diagnostic_number = 0;
 	for (const l of str.split(/(?:\r\n|\r|\n)/).filter(line => line.length > 0)) {
@@ -209,16 +185,13 @@ async function analysis(str:string, base:string) {
 
 async function update_yayalint_charge(settings:YayalintSettings): Promise<void> {
 	if (settings.yayalint_path.length == 0) {
-		//'yayalint_path is not configured'
 		throw new Error(localize('yayalint.analysis.error.not_configured.yayalint_path', 'yayalint_path is not configured.'));
 	}
 	if (settings.yaya_cfg.length == 0) {
-		//'yaya_cfg is not configured'
 		throw new Error(localize('yayalint.analysis.error.not_configured.yaya_cfg', 'yaya_cfg is not configured.'));
 	}
 	const folders = await connection.workspace.getWorkspaceFolders();
 	if (!folders || folders.length == 0) {
-		//'no workspace folder'
 		throw new Error(localize('yayalint.analysis.error.no_workspace_folder', 'No workspace folder found.'));
 	}
 	const yaya_cfg	= path.resolve(fileURLToPath(folders[0].uri), settings.yaya_cfg);
