@@ -18,7 +18,6 @@ import {
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-import { ExecException } from 'child_process';
 const util	= require('node:util');
 const exec	= util.promisify(require('node:child_process').exec);
 import path = require('path');
