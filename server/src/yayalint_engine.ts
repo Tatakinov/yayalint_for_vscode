@@ -75,7 +75,20 @@ namespace yayalint_engine {
 		addDic(dic:string){
 			this._dicOrder.push(dic);
 		}
-		//read all dic files
+		//readDic
+		readDic(dic:string):Dicfile{
+			let dicfile:Dicfile = new Dicfile(dic, fs.readFileSync(dic, 'utf8').split('\n|\r|\r\n'));
+			return dicfile;
+		}
+		//read all dic files and return array of Dicfile
+		readAllDic():Array<Dicfile>{
+			let dicFiles:Array<Dicfile>=new Array<Dicfile>();
+			for(let i:number=0;i<this._dicOrder.length;i++){
+				let dicFile:Dicfile=this.readDic(this._dicOrder[i]);
+				dicFiles.push(dicFile);
+			}
+			return dicFiles;
+		}
 	}
 	export class ConfigurationFileReader {
 		//base path
