@@ -1,4 +1,5 @@
 //A yaya syntax parser engine for linting
+import exp = require('constants');
 import * as fs from 'fs';
 namespace yayalint_engine {
 	namespace yaya_parser {
@@ -57,6 +58,20 @@ namespace yayalint_engine {
 			this._defines = new Array<yaya_parser.define>();
 			this._gobal_defines = new Array<yaya_parser.gobal_define>();
 			this._functions = new Array<yaya_parser.function_define>();
+		}
+	}
+	export class lint_result{}
+	export class lint_data{
+		private _dicorder: DicOrder;
+		private _dicfiles: Array<Dicfile>;
+		private _known_global_variables: Array<string>=[];
+		private _lint_results: Array<lint_result>=[];
+		constructor(dicorder: DicOrder){
+			this._dicorder = dicorder;
+			this._dicfiles = this._dicorder.readAllDic();
+		}
+		public UpdateKnownGlobalVariables(variables: Array<string>){
+			this._known_global_variables = variables;
 		}
 	}
 	//Configuration file reader
