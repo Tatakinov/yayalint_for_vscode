@@ -21,28 +21,54 @@ namespace yayalint_engine {
 		}
 		export class expr{
 			private _data: string;
-			private _type: string;
+			private _type: string="unknown";
 			private _is_constexpr: boolean=false;
 			private _possible_values: string[]=[];
 
-			constructor(data: string, type: string){
+			constructor(data: string){
 				this._data = data;
-				this._type = type;
 			}
 		}
+		export type code_line= expr|code_block;
 		export class code_block{
-			private _codes: Array<expr|code_block>;
+			private _codes: Array<code_line>;
 			constructor(){
-				this._codes = new Array<expr|code_block>();
+				this._codes = new Array<code_line>();
+			}
+			
+			public build_by_lines(lines: Array<string>, line_num: number): number{
+				//returns the line number of the next line to be parsed
+				let i: number = line_num;
+				while(i < lines.length){
+					let line: string = lines[i];
+					if(line.length == 0){
+						i++;
+						continue;
+					}
+					if(line[0] == '{'){
+						let body: code_block = new code_block();
+						i = body.build_by_lines(lines, i+1);
+						this._codes.push(body);
+					}
+					else{
+						let tempexpr: expr = new expr(line);
+						this._codes.push(tempexpr);
+					}
+				}
+				return i;
 			}
 		}
 		export class function_define{
 			private _name: string;
 			private _body: code_block;
+			private _start_line: number;
+			private _end_line: number;
 
-			constructor(name: string, body: code_block){
+			constructor(name: string, body: code_block, start_line: number, end_line: number){
 				this._name = name;
 				this._body = body;
+				this._start_line = start_line;
+				this._end_line = end_line;
 			}
 		}
 	}
@@ -58,6 +84,58 @@ namespace yayalint_engine {
 			this._defines = new Array<yaya_parser.define>();
 			this._gobal_defines = new Array<yaya_parser.gobal_define>();
 			this._functions = new Array<yaya_parser.function_define>();
+		}
+		parse(){
+			//for each line
+			for(let i=0; i<this._file_content.length; i++){
+				let line = this._file_content[i];
+				//if line is line comment
+				if(line.startsWith("//")){
+					continue;
+				}
+				//if line is block comment
+				if(line.startsWith("/*")){
+					//find end of block comment (string that contains "*/")
+					while(!line.includes("*/")){
+						i++;
+						line += this._file_content[i];
+					}
+					//remove any before "*/"
+					line = line.substring(line.indexOf("*/")+2);
+				}
+				//if line ends with "\", append next line
+				while(line.endsWith("\\")){
+					i++;
+					line = line.substring(0, line.length-1);
+					line += this._file_content[i];
+				}
+				//if line is define (startsWith "#\s*define")
+				if(line.startsWith("#\s*define")){
+					let define_line = line.split("[ \t]");
+					let define_name = define_line[1];
+					let define_value = define_line[2];
+					this._defines.push(new yaya_parser.define(define_name, define_value));
+					continue;
+				}
+				//if line is gobal define (startsWith "#\s*gobaldefine")
+				if(line.startsWith("#\s*gobaldefine")){
+					let define_line = line.split("[ \t]");
+					let define_name = define_line[1];
+					let define_value = define_line[2];
+					this._gobal_defines.push(new yaya_parser.gobal_define(define_name, define_value));
+					continue;
+				}
+				//else, the line must be a function
+				let function_name = line.split("[ \t]")[1];
+				let function_begin_line = i;
+				//find function name
+				//function name not contains [ \t{}()//\n]
+				//e.g. some_function{body}
+				if(line.includes("{")){
+					let function_body_begin_line = i;
+					let function_body_end_line = -1;
+				}
+			}
 		}
 	}
 	export class lint_result{}
