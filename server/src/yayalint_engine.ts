@@ -25,8 +25,36 @@ namespace yayalint_engine {
 			private _is_constexpr: boolean=false;
 			private _possible_values: string[]=[];
 
-			constructor(data: string){
+			constructor(){
+				this._data="";
+			}
+
+			public set_data(data: string){
 				this._data = data;
+			}
+		}
+		export class statement_if{
+			private _condition: expr;
+			private _true_statement: code_block;
+			private _false_statement: code_block;
+			constructor(){
+				this._condition = new expr("");
+				this._true_statement = new code_block();
+				this._false_statement = new code_block();
+			}
+
+			public build_by_lines(lines: Array<string>, line_num: number): number{
+				//returns the line number of the next line to be parsed
+				let line = lines[line_num];
+				//get the condition
+				//e.g. if (a == b){}
+				//or if (a == (b));a;
+				let condition_start = line.indexOf("if");
+				let condition_end = line.indexOf("{|;");
+				let condition_str = line.substring(condition_start+3, condition_end);
+				this._condition.set_data(condition_str);
+				//get the true statement
+				let true_statement_start = line.indexOf("{", condition_end);
 			}
 		}
 		export type code_line= expr|code_block;
@@ -54,8 +82,12 @@ namespace yayalint_engine {
 						let tempexpr: expr = new expr(line);
 						this._codes.push(tempexpr);
 					}
+					i++;
+					if(line[i] == '}'){
+						return i;
+					}
 				}
-				return i;
+				throw new Error("unexpected end of file");
 			}
 		}
 		export class function_define{
