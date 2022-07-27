@@ -38,7 +38,7 @@ namespace yayalint_engine {
 			private _true_statement: code_block;
 			private _false_statement: code_block;
 			constructor(){
-				this._condition = new expr("");
+				this._condition = new expr();
 				this._true_statement = new code_block();
 				this._false_statement = new code_block();
 			}
@@ -47,23 +47,68 @@ namespace yayalint_engine {
 				//returns the line number of the next line to be parsed
 				let line = lines[line_num];
 				//get the condition
-				//e.g. if (a == b){}
-				//or if (a == (b));a;
-				let condition_start = line.indexOf("if");
-				let condition_end = line.indexOf("{|;");
-				let condition_str = line.substring(condition_start+3, condition_end);
-				this._condition.set_data(condition_str);
+				/*
+					e.g.
+					if (a == b)
+					{
+						something();
+					}
+					//or
+					if a == b
+						something();
+				*/
+				let condition_start_index = line.indexOf("if")+2;
+				if(condition_start_index == -1)
+					throw new Error("invalid if statement");
+				let condition_end_index = line.indexOf("{");
+				let condition_expr:expr = new expr();
+				if(condition_end_index==-1)
+					condition_expr.set_data(line.substring(condition_start_index));
+				else
+					condition_expr.set_data(line.substring(condition_start_index, condition_end_index));
+				this._condition = condition_expr;
 				//get the true statement
-				let true_statement_start = line.indexOf("{", condition_end);
+				let next_line:string = lines[line_num+1];
+				let is_one_line_code_block: boolean = condition_end_index==-1 && next_line.indexOf("{")==-1;
+				let false_statement_start_index: number;
+				if(is_one_line_code_block){
+					this._true_statement = new code_block();
+					this._true_statement.build_by_line(next_line);
+					false_statement_start_index = line_num+2;
+				}
+				else{
+					this._true_statement = new code_block();
+					false_statement_start_index = this._true_statement.build_by_lines(lines, line_num+1);
+				}
+				//get the false statement
+				line=lines[false_statement_start_index];
+				next_line=lines[false_statement_start_index+1];
+				if(!line.startsWith("else")){
+					return false_statement_start_index;
+				}
+				is_one_line_code_block = line.indexOf("{")==-1 && next_line.indexOf("{")==-1 && !line.startsWith("else\s*if");
+				if(is_one_line_code_block){
+					this._false_statement = new code_block();
+					this._false_statement.build_by_line(next_line);
+					return false_statement_start_index+2;
+				}
+				else{
+					this._false_statement = new code_block();
+					return this._false_statement.build_by_lines(lines, false_statement_start_index+1);
+				}
 			}
 		}
-		export type code_line= expr|code_block;
+		export type code_line= expr|code_block|statement_if;
 		export class code_block{
 			private _codes: Array<code_line>;
 			constructor(){
 				this._codes = new Array<code_line>();
 			}
-			
+			public build_by_line(line: string): void{
+				let tempexpr: expr = new expr();
+				tempexpr.set_data(line);
+				this._codes.push(tempexpr);
+			}
 			public build_by_lines(lines: Array<string>, line_num: number): number{
 				//returns the line number of the next line to be parsed
 				let i: number = line_num;
@@ -77,14 +122,22 @@ namespace yayalint_engine {
 						let body: code_block = new code_block();
 						i = body.build_by_lines(lines, i+1);
 						this._codes.push(body);
+						continue;
+					}
+					else if(line.startsWith("if")){
+						let if_statement: statement_if = new statement_if();
+						i = if_statement.build_by_lines(lines, i);
+						this._codes.push(if_statement);
+						continue;
 					}
 					else{
-						let tempexpr: expr = new expr(line);
+						let tempexpr: expr = new expr();
+						tempexpr.set_data(line);
 						this._codes.push(tempexpr);
+						i++;
 					}
-					i++;
 					if(line[i] == '}'){
-						return i;
+						return i+1;
 					}
 				}
 				throw new Error("unexpected end of file");
