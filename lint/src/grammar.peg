@@ -1,0 +1,368 @@
+start
+  := Grammar
+EOF
+  := $
+NL
+  := ch='\x0a'
+Ascii
+  := '[\x00-\x7f]'
+MBHead
+  := '[\xc2-\xf4]'
+MBData
+  := '[\x80-\xbf]'
+MB
+  := '[\S]'
+Char
+  := !NL ch={Ascii | MB}
+NumberZ
+  := sign='[+-]'? num='[0-9]+'
+NumberF
+  := '.' v='[0-9]'+
+NumberR
+  := num=NumberZ float=NumberF?
+NumberX
+  := sign='[+-]'? '0x' v='[0-9A-Fa-f]'+
+NumberRX
+  := num=NumberX | num=NumberR
+Space
+  := '[ \t\f]' | '/\x0a' | Comment2
+Comment1
+  := Space* '//' pos=@ comment={Char*} NL
+Comment2
+  := '/\*' {!'\*/' Char}* '\*/'
+Sep
+  := NL | Comment1
+Sep2
+  := ';'
+Empty
+  := {Space* NL} | comment=Comment1
+SepEx
+  := NL | Space
+Reserve
+  := 'if' | 'elseif' | 'else' | 'case' | 'when' | 'others' | 'switch' | 'while' 'for' | 'break' | 'continue' | 'return' | 'foreach'
+InvalidName
+  := '[ !"#$%&\'(),+\-*/:;<=>?@[\]`{|}\t\f]'
+InvalidNameHead
+  := '[0-9]' | InvalidName
+ValidNameChar
+  := !InvalidName ch=Char
+NameStartNumber
+  := num='[0-9]'+ name=ValidNameChar+
+NameStartChar
+  := !{InvalidNameHead | {Reserve {EOF | InvalidName | NL}}} name=ValidNameChar+
+Name
+  := num=NameStartNumber | ch=NameStartChar
+Number
+  := NumberRX
+
+LocalVariable
+  := pos=@ '_' name=Name
+GlobalVariable
+  := pos=@ !'_' name=Name
+Variable
+  := local=LocalVariable | global=GlobalVariable
+
+Return
+  := Space* special='return'
+Break
+  := Space* special='break'
+Continue
+  := Space* special='continue'
+
+StringSepDouble
+  := '"'
+StringSepSingle
+  := '\''
+StringNL
+  := '/' Space* NL v=Empty*
+CharInStringSingle
+  := !StringSepSingle ch=Char
+CharNLInStringSingleSingle
+  := nl=StringNL | ch=CharInStringSingle
+CharNLInStringMultiSingle
+  := nl=NL | ch=CharInStringSingle
+StringSingleSingle
+  := StringSepSingle v=CharNLInStringSingleSingle* StringSepSingle
+StringMultiSingle
+  := '<<' StringSepSingle v=CharNLInStringMultiSingle* StringSepSingle '>>'
+String_Single
+  := single=StringSingleSingle | multi=StringMultiSingle
+
+ExpSep
+  := Space*
+ExpOp1
+  := ','
+ExpOp2
+  := '\+=' | '-=' | '\*=' | '/=' | '%=' | '\+:=' | '-:=' | '\*:=' | '/:=' | '%:=' | ',='
+ExpOp3
+  := '=' | ':='
+ExpOp4
+  := '\|\|'
+ExpOp5
+  := '&&'
+ExpOp6
+  := '==' | '!=' | '<=' | '>=' | '<' | '>' | '_in_' | '!_in_'
+ExpOp7
+  := '&'
+ExpOp8
+  := '[+-]'
+ExpOp9
+  := '[*/%]'
+ExpOp10
+  := '\+\+' | '-'
+ExpOp11
+  := '!'
+
+ExpS1Sub
+  := ExpSep enum=ExpOp1 ExpSep v=ExpS2
+ExpS1
+  := head=ExpS2 tail=ExpS1Sub*
+ExpS2Sub
+  := ExpSep op_assign=ExpOp2 ExpSep v=ExpS3
+ExpS2
+  := head=ExpS3 tail=ExpS2Sub*
+ExpS3Sub
+  := ExpSep pos=@ assign=ExpOp3 ExpSep v=ExpS4
+ExpS3
+  := head=ExpS4 tail=ExpS3Sub*
+ExpS4Sub
+  := ExpSep or=ExpOp4 ExpSep v=ExpS5
+ExpS4
+  := head=ExpS5 tail=ExpS4Sub*
+ExpS5Sub
+  := ExpSep and=ExpOp5 ExpSep v=ExpS6
+ExpS5
+  := head=ExpS6 tail=ExpS5Sub*
+ExpS6Sub
+  := ExpSep comparison=ExpOp6 ExpSep v=ExpS7
+ExpS6
+  := head=ExpS7 tail=ExpS6Sub*
+ExpS7
+  := feedback=ExpOp7? ExpSep tail=ExpS8
+ExpS8Sub
+  := ExpSep add=ExpOp8 ExpSep v=ExpS9
+ExpS8
+  := head=ExpS9 tail=ExpS8Sub*
+ExpS9Sub
+  := ExpSep multi=ExpOp9 ExpSep v=ExpS10
+ExpS9
+  := head=ExpS10 tail=ExpS9Sub*
+ExpS10Sub
+  := ExpSep inc=ExpOp10 ExpSep v=ExpS11
+ExpS10
+  := head=ExpS11 tail=ExpS10Sub*
+ExpS11
+  := not=ExpOp11? ExpSep tail=ExpS12
+
+BracketIndexS
+  := ExpSep '\[' ExpSep v=ExpInStringSub ExpSep '\]'
+BracketCallS
+  := ExpSep '\(' ExpSep v=ExpInStringSub ExpSep '\)'
+WithBracketS
+  := ExpSep index=BracketIndexS | call=BracketCallS
+String_Single_Bracket
+  := v=String_Single index=BracketIndexS*
+LocalVariableWithBracketS
+  := v=LocalVariable index=BracketIndexS*
+GlobalVariableWithBracketS
+  := v=GlobalVariable append=WithBracketS*
+BracketExpS
+  := '\(' ExpSep v=ExpS1 ExpSep '\)' index=BracketIndexS*
+ExpS12
+  :=
+    local=LocalVariableWithBracketS |
+    global=GlobalVariableWithBracketS |
+    num=Number | str=String_Single_Bracket |
+    bracket=BracketExpS
+
+ExpInStringSub
+  := ExpS1
+
+ExpInString
+  := '%\(' v=ExpInStringSub '\)'
+CharInString
+  := !{'%\(' | StringSepDouble} ch=Char
+StringDoubleSub
+  := exp=ExpInString | nl=StringNL | ch=CharInString
+StringSingleDouble
+  := StringSepDouble v=StringDoubleSub* StringSepDouble
+StringSingle
+  := single=StringSingleSingle | double=StringSingleDouble
+
+Expression
+  := Exp1
+
+Exp1Sub
+  := ExpSep enum=ExpOp1 ExpSep v=Exp2
+Exp1
+  := head=Exp2 tail=Exp1Sub*
+Exp2Sub
+  := ExpSep op_assign=ExpOp2 ExpSep v=Exp3
+Exp2
+  := head=Exp3 tail=Exp2Sub*
+Exp3Sub
+  := ExpSep pos=@ assign=ExpOp3 ExpSep v=Exp4
+Exp3
+  := head=Exp4 tail=Exp3Sub*
+Exp4Sub
+  := ExpSep or=ExpOp4 ExpSep v=Exp5
+Exp4
+  := head=Exp5 tail=Exp4Sub*
+Exp5Sub
+  := ExpSep and=ExpOp5 ExpSep v=Exp6
+Exp5
+  := head=Exp6 tail=Exp5Sub*
+Exp6Sub
+  := ExpSep comparison=ExpOp6 ExpSep v=Exp7
+Exp6
+  := head=Exp7 tail=Exp6Sub*
+Exp7
+  := feedback=ExpOp7? ExpSep tail=Exp8
+Exp8Sub
+  := ExpSep add=ExpOp8 ExpSep v=Exp9
+Exp8
+  := head=Exp9 tail=Exp8Sub*
+Exp9Sub
+  := ExpSep multi=ExpOp9 ExpSep v=Exp10
+Exp9
+  := head=Exp10 tail=Exp9Sub*
+Exp10Sub
+  := ExpSep inc=ExpOp10 ExpSep v=Exp11
+Exp10
+  := head=Exp11 tail=Exp10Sub*
+Exp11
+  := not=ExpOp11? ExpSep tail=Exp12
+BracketIndex
+  := ExpSep '\[' ExpSep v=Expression ExpSep '\]'
+BracketCall
+  := ExpSep '\(' ExpSep v=Expression ExpSep '\)'
+WithBracket
+  := index=BracketIndex | call=BracketCall
+BracketExp
+  := '\(' ExpSep v=Exp1 ExpSep '\)' index=BracketIndex*
+LocalVariableWithBracket
+  := v=LocalVariable index=BracketIndex*
+GlobalVariableWithBracket
+  := v=GlobalVariable append=WithBracket*
+Exp12
+  :=
+    local=LocalVariableWithBracket |
+    global=GlobalVariableWithBracket |
+    num=Number | str=StringV | bracket=BracketExp
+StringV
+  := single=StringSingle | multi=StringMulti
+String
+  := StringV
+StringMulti
+  := single=StringMultiSingle | double=StringMultiDouble
+ExpInStr
+  := '%\(' ExpSep v=Expression ExpSep '\)'
+StringMultiDouble
+  := '<<' StringSepDouble v=StringDoubleSub* StringSepDouble '>>'
+
+AlternativeSub
+  := 'random' | 'nonoverlap' | 'sequential' | 'array'
+AlternativeParallel
+  := 'parallel' | 'void'
+Alternative
+  := 'void' | 'pool' | 'all' | 'last' | AlternativeSub | {'melt_' AlternativeSub} | {AlternativeSub '_pool'}
+AlternativeSep
+  := Space* '--' Space* comment=Sep
+ForConditionSep
+  := ';'
+ForCondition
+  := init=Expression {Space* ForConditionSep}+ condition=Expression {Space* ForConditionSep}+ Space* next=Expression
+ForeachCondition
+  := array=Expression {Space* ForConditionSep}+ Space* var=Variable
+Label
+  := str=String | num=Number
+WhenConditionSub
+  := Space* {',' | '-'} Space* name=Label
+WhenCondition
+  := name=Label names=WhenConditionSub*
+
+OneLineExpression
+  := ScopeInner
+
+ScopeBegin
+  := '{'
+ScopeEnd
+  := '}'
+
+ExpressionInBracket
+  := '\(' Expression '\)'
+Condition
+  := exp=Expression | bracket=ExpressionInBracket
+ScopeInClauseSub
+  := {SepEx | Sep2}+ exp=OneLineExpression
+ScopeInClause
+  := one=ScopeInClauseSub | scope=Scope1
+Scope1Sub
+  := alter=Alternative SepEx* ':' SepEx*
+Scope1
+  := Scope1Sub? scope=Scope2
+Scope2
+  := ScopeBegin scope=ScopeInner* ScopeEnd
+ScopeInnerSub
+  := parallel=ScopeParallel | scope=Scope1 | scope_if=ScopeIf |
+    scope_while=ScopeWhile | scope_for=ScopeFor |
+    scope_foreach=ScopeForeach | scope_case=ScopeCase |
+    scope_switch=ScopeSwitch | alter=AlternativeSep |
+    exp=Expression | empty=Empty
+ScopeInner
+  := {SepEx | Sep2}* scope=ScopeInnerSub {SepEx | Sep2}*
+ScopeParallel
+  := {'parallel' | 'void'} SepEx+ exp=Expression
+ScopeIfSubElseIf
+  := {SepEx | Sep2}* scope=ScopeIfElseIf
+ScopeIfSubElse
+  := {SepEx | Sep2}* scope=ScopeIfElse
+ScopeIf
+  := scope_if=ScopeIfIf scope_elseif=ScopeIfSubElseIf* scope_else=ScopeIfSubElse?
+ScopeIfSubIf
+  := 'if' condition=Condition scope=ScopeInClause
+ScopeIfIf
+  := Space* scope=ScopeIfSubIf
+ScopeIfElseIf
+  := Space* 'else' scope=ScopeIfSubIf
+ScopeIfElse
+  := Space* 'else' scope=ScopeInClause
+ScopeWhile
+  := Space* 'while' Space* condition=Condition scope=ScopeInClause
+ScopeForSub
+  := raw=ForCondition | '\(' bracket=ForCondition '\)'
+ScopeFor
+  := Space* 'for' Space* ScopeForSub scope=ScopeInClause
+ScopeForeachSub
+  := raw=ForeachCondition | '\(' bracket=ForeachCondition '\)'
+ScopeForeach
+  := Space* 'foreach' Space* ScopeForeachSub scope=ScopeInClause
+ScopeCase
+  := case=ScopeCaseCase
+ScopeCaseCase
+  := Space* 'case' Space* condition=Condition SepEx* ScopeBegin when=ScopeCaseWhen* others=ScopeCaseOthers? SepEx* ScopeEnd
+ScopeCaseWhenSub
+  := raw=WhenCondition | '\(' bracket=WhenCondition '\)'
+ScopeCaseWhen
+  := Space* 'when' Space* condition=ScopeCaseWhenSub scope=ScopeInClause
+ScopeCaseOthers
+  := Space* 'others' Space* scope=ScopeInClause
+ScopeSwitch
+  := Space* 'switch' Space* condition=Condition ScopeInClause
+
+Scope
+  := Scope1
+ScopeOuter
+  := Scope2
+
+FunctionName
+  := pos=@ name=Name
+FunctionAlternative
+  := SepEx* ':' SepEx* alter=Alternative
+Function
+  := name=FunctionName alter=FunctionAlternative? SepEx* body=ScopeOuter
+
+GrammarSub
+  := func=Function | empty=Empty
+Grammar
+  := sub=GrammarSub* EOF

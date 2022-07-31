@@ -4,5 +4,7 @@
 /server/out
 /server/node_modules
 /scripts
+/lint/out
+/lint/node_modules
 
 *.vsix
