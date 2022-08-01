@@ -7,5 +7,9 @@
                 "cmd": "tspeg --include-grammar-comment=false ${file} ${fileDirname}\\parser.ts"
             }
         ]
+    },
+    // The following will hide the js and map files in the editor
+    "files.exclude": {
+        "lint/src/parser.ts": true //all we need is change the peg file
     }
 }
