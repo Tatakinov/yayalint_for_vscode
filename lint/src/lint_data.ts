@@ -1,5 +1,3 @@
-//A yaya syntax parser engine for linting
-import exp = require('constants');
 import * as fs from 'fs';
 namespace yayalint_engine {
 	namespace yaya_parser {
@@ -43,16 +41,34 @@ namespace yayalint_engine {
 				this._false_statement = new code_block();
 			}
 		}
-		export type code_line= expr|code_block|statement_if;
+		export class statement_while{
+			private _condition: expr;
+			private _body: code_block;
+		}
+		export class statement_for{
+			private _condition_init: expr;
+			private _condition_condition: expr;
+			private _condition_increment: expr;
+			private _body: code_block;
+		}
+		export class statement_for_each{
+			private _variable: string;
+			private _array: expr;
+			private _body: code_block;
+		}
+		export class statement_switch{
+			private _codes: Array<code_line>;
+		}
+		export class statement_case{
+			private _maps: Map<string, code_block>;
+		}
+		export type statements = statement_if | statement_while | statement_for | statement_switch | statement_case;
+		export type code_line= expr|code_block|statements;
 		export class code_block{
+			private _choose_type: string="random";
 			private _codes: Array<code_line>;
 			constructor(){
 				this._codes = new Array<code_line>();
-			}
-			public build_by_line(line: string): void{
-				let tempexpr: expr = new expr();
-				tempexpr.set_data(line);
-				this._codes.push(tempexpr);
 			}
 		}
 		export class function_define{
