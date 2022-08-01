@@ -25,10 +25,10 @@ export enum ASTKinds {
     Space_1 = "Space_1",
     Space_2 = "Space_2",
     Space_3 = "Space_3",
-    Comment1 = "Comment1",
-    Comment1_$0 = "Comment1_$0",
-    Comment2 = "Comment2",
-    Comment2_$0 = "Comment2_$0",
+    LineComment = "LineComment",
+    LineComment_$0 = "LineComment_$0",
+    BlockComment = "BlockComment",
+    BlockComment_$0 = "BlockComment_$0",
     Sep_1 = "Sep_1",
     Sep_2 = "Sep_2",
     Sep2 = "Sep2",
@@ -84,36 +84,36 @@ export enum ASTKinds {
     String_Single_1 = "String_Single_1",
     String_Single_2 = "String_Single_2",
     ExpSep = "ExpSep",
-    ExpOp1 = "ExpOp1",
-    ExpOp2_1 = "ExpOp2_1",
-    ExpOp2_2 = "ExpOp2_2",
-    ExpOp2_3 = "ExpOp2_3",
-    ExpOp2_4 = "ExpOp2_4",
-    ExpOp2_5 = "ExpOp2_5",
-    ExpOp2_6 = "ExpOp2_6",
-    ExpOp2_7 = "ExpOp2_7",
-    ExpOp2_8 = "ExpOp2_8",
-    ExpOp2_9 = "ExpOp2_9",
-    ExpOp2_10 = "ExpOp2_10",
-    ExpOp2_11 = "ExpOp2_11",
-    ExpOp3_1 = "ExpOp3_1",
-    ExpOp3_2 = "ExpOp3_2",
-    ExpOp4 = "ExpOp4",
-    ExpOp5 = "ExpOp5",
-    ExpOp6_1 = "ExpOp6_1",
-    ExpOp6_2 = "ExpOp6_2",
-    ExpOp6_3 = "ExpOp6_3",
-    ExpOp6_4 = "ExpOp6_4",
-    ExpOp6_5 = "ExpOp6_5",
-    ExpOp6_6 = "ExpOp6_6",
-    ExpOp6_7 = "ExpOp6_7",
-    ExpOp6_8 = "ExpOp6_8",
+    ExpOpComma = "ExpOpComma",
+    ExpOpOtherSet_1 = "ExpOpOtherSet_1",
+    ExpOpOtherSet_2 = "ExpOpOtherSet_2",
+    ExpOpOtherSet_3 = "ExpOpOtherSet_3",
+    ExpOpOtherSet_4 = "ExpOpOtherSet_4",
+    ExpOpOtherSet_5 = "ExpOpOtherSet_5",
+    ExpOpOtherSet_6 = "ExpOpOtherSet_6",
+    ExpOpOtherSet_7 = "ExpOpOtherSet_7",
+    ExpOpOtherSet_8 = "ExpOpOtherSet_8",
+    ExpOpOtherSet_9 = "ExpOpOtherSet_9",
+    ExpOpOtherSet_10 = "ExpOpOtherSet_10",
+    ExpOpOtherSet_11 = "ExpOpOtherSet_11",
+    ExpOpSet_1 = "ExpOpSet_1",
+    ExpOpSet_2 = "ExpOpSet_2",
+    ExpOpOR = "ExpOpOR",
+    ExpOpAND = "ExpOpAND",
+    ExpOpCompare_1 = "ExpOpCompare_1",
+    ExpOpCompare_2 = "ExpOpCompare_2",
+    ExpOpCompare_3 = "ExpOpCompare_3",
+    ExpOpCompare_4 = "ExpOpCompare_4",
+    ExpOpCompare_5 = "ExpOpCompare_5",
+    ExpOpCompare_6 = "ExpOpCompare_6",
+    ExpOpCompare_7 = "ExpOpCompare_7",
+    ExpOpCompare_8 = "ExpOpCompare_8",
     ExpOp7 = "ExpOp7",
     ExpOp8 = "ExpOp8",
     ExpOp9 = "ExpOp9",
     ExpOp10_1 = "ExpOp10_1",
     ExpOp10_2 = "ExpOp10_2",
-    ExpOp11 = "ExpOp11",
+    ExpOpNOT = "ExpOpNOT",
     ExpS1Sub = "ExpS1Sub",
     ExpS1 = "ExpS1",
     ExpS2Sub = "ExpS2Sub",
@@ -342,28 +342,28 @@ export interface NumberRX_2 {
 export type Space = Space_1 | Space_2 | Space_3;
 export type Space_1 = string;
 export type Space_2 = string;
-export type Space_3 = Comment2;
-export interface Comment1 {
-    kind: ASTKinds.Comment1;
+export type Space_3 = BlockComment;
+export interface LineComment {
+    kind: ASTKinds.LineComment;
     pos: PosInfo;
-    comment: Comment1_$0;
+    comment: LineComment_$0;
 }
-export type Comment1_$0 = Char[];
-export interface Comment2 {
-    kind: ASTKinds.Comment2;
+export type LineComment_$0 = Char[];
+export interface BlockComment {
+    kind: ASTKinds.BlockComment;
 }
-export interface Comment2_$0 {
-    kind: ASTKinds.Comment2_$0;
+export interface BlockComment_$0 {
+    kind: ASTKinds.BlockComment_$0;
 }
 export type Sep = Sep_1 | Sep_2;
 export type Sep_1 = NL;
-export type Sep_2 = Comment1;
+export type Sep_2 = LineComment;
 export type Sep2 = string;
 export type Empty = Empty_1 | Empty_2;
 export type Empty_1 = Empty_$0;
 export interface Empty_2 {
     kind: ASTKinds.Empty_2;
-    comment: Comment1;
+    comment: LineComment;
 }
 export interface Empty_$0 {
     kind: ASTKinds.Empty_$0;
@@ -500,43 +500,43 @@ export interface String_Single_2 {
     multi: StringMultiSingle;
 }
 export type ExpSep = Space[];
-export type ExpOp1 = string;
-export type ExpOp2 = ExpOp2_1 | ExpOp2_2 | ExpOp2_3 | ExpOp2_4 | ExpOp2_5 | ExpOp2_6 | ExpOp2_7 | ExpOp2_8 | ExpOp2_9 | ExpOp2_10 | ExpOp2_11;
-export type ExpOp2_1 = string;
-export type ExpOp2_2 = string;
-export type ExpOp2_3 = string;
-export type ExpOp2_4 = string;
-export type ExpOp2_5 = string;
-export type ExpOp2_6 = string;
-export type ExpOp2_7 = string;
-export type ExpOp2_8 = string;
-export type ExpOp2_9 = string;
-export type ExpOp2_10 = string;
-export type ExpOp2_11 = string;
-export type ExpOp3 = ExpOp3_1 | ExpOp3_2;
-export type ExpOp3_1 = string;
-export type ExpOp3_2 = string;
-export type ExpOp4 = string;
-export type ExpOp5 = string;
-export type ExpOp6 = ExpOp6_1 | ExpOp6_2 | ExpOp6_3 | ExpOp6_4 | ExpOp6_5 | ExpOp6_6 | ExpOp6_7 | ExpOp6_8;
-export type ExpOp6_1 = string;
-export type ExpOp6_2 = string;
-export type ExpOp6_3 = string;
-export type ExpOp6_4 = string;
-export type ExpOp6_5 = string;
-export type ExpOp6_6 = string;
-export type ExpOp6_7 = string;
-export type ExpOp6_8 = string;
+export type ExpOpComma = string;
+export type ExpOpOtherSet = ExpOpOtherSet_1 | ExpOpOtherSet_2 | ExpOpOtherSet_3 | ExpOpOtherSet_4 | ExpOpOtherSet_5 | ExpOpOtherSet_6 | ExpOpOtherSet_7 | ExpOpOtherSet_8 | ExpOpOtherSet_9 | ExpOpOtherSet_10 | ExpOpOtherSet_11;
+export type ExpOpOtherSet_1 = string;
+export type ExpOpOtherSet_2 = string;
+export type ExpOpOtherSet_3 = string;
+export type ExpOpOtherSet_4 = string;
+export type ExpOpOtherSet_5 = string;
+export type ExpOpOtherSet_6 = string;
+export type ExpOpOtherSet_7 = string;
+export type ExpOpOtherSet_8 = string;
+export type ExpOpOtherSet_9 = string;
+export type ExpOpOtherSet_10 = string;
+export type ExpOpOtherSet_11 = string;
+export type ExpOpSet = ExpOpSet_1 | ExpOpSet_2;
+export type ExpOpSet_1 = string;
+export type ExpOpSet_2 = string;
+export type ExpOpOR = string;
+export type ExpOpAND = string;
+export type ExpOpCompare = ExpOpCompare_1 | ExpOpCompare_2 | ExpOpCompare_3 | ExpOpCompare_4 | ExpOpCompare_5 | ExpOpCompare_6 | ExpOpCompare_7 | ExpOpCompare_8;
+export type ExpOpCompare_1 = string;
+export type ExpOpCompare_2 = string;
+export type ExpOpCompare_3 = string;
+export type ExpOpCompare_4 = string;
+export type ExpOpCompare_5 = string;
+export type ExpOpCompare_6 = string;
+export type ExpOpCompare_7 = string;
+export type ExpOpCompare_8 = string;
 export type ExpOp7 = string;
 export type ExpOp8 = string;
 export type ExpOp9 = string;
 export type ExpOp10 = ExpOp10_1 | ExpOp10_2;
 export type ExpOp10_1 = string;
 export type ExpOp10_2 = string;
-export type ExpOp11 = string;
+export type ExpOpNOT = string;
 export interface ExpS1Sub {
     kind: ASTKinds.ExpS1Sub;
-    enum: ExpOp1;
+    enum: ExpOpComma;
     v: ExpS2;
 }
 export interface ExpS1 {
@@ -546,7 +546,7 @@ export interface ExpS1 {
 }
 export interface ExpS2Sub {
     kind: ASTKinds.ExpS2Sub;
-    op_assign: ExpOp2;
+    op_assign: ExpOpOtherSet;
     v: ExpS3;
 }
 export interface ExpS2 {
@@ -557,7 +557,7 @@ export interface ExpS2 {
 export interface ExpS3Sub {
     kind: ASTKinds.ExpS3Sub;
     pos: PosInfo;
-    assign: ExpOp3;
+    assign: ExpOpSet;
     v: ExpS4;
 }
 export interface ExpS3 {
@@ -567,7 +567,7 @@ export interface ExpS3 {
 }
 export interface ExpS4Sub {
     kind: ASTKinds.ExpS4Sub;
-    or: ExpOp4;
+    or: ExpOpOR;
     v: ExpS5;
 }
 export interface ExpS4 {
@@ -577,7 +577,7 @@ export interface ExpS4 {
 }
 export interface ExpS5Sub {
     kind: ASTKinds.ExpS5Sub;
-    and: ExpOp5;
+    and: ExpOpAND;
     v: ExpS6;
 }
 export interface ExpS5 {
@@ -587,7 +587,7 @@ export interface ExpS5 {
 }
 export interface ExpS6Sub {
     kind: ASTKinds.ExpS6Sub;
-    comparison: ExpOp6;
+    comparison: ExpOpCompare;
     v: ExpS7;
 }
 export interface ExpS6 {
@@ -632,7 +632,7 @@ export interface ExpS10 {
 }
 export interface ExpS11 {
     kind: ASTKinds.ExpS11;
-    not: Nullable<ExpOp11>;
+    not: Nullable<ExpOpNOT>;
     tail: ExpS12;
 }
 export interface BracketIndexS {
@@ -734,7 +734,7 @@ export interface StringSingle_2 {
 export type Expression = Exp1;
 export interface Exp1Sub {
     kind: ASTKinds.Exp1Sub;
-    enum: ExpOp1;
+    enum: ExpOpComma;
     v: Exp2;
 }
 export interface Exp1 {
@@ -744,7 +744,7 @@ export interface Exp1 {
 }
 export interface Exp2Sub {
     kind: ASTKinds.Exp2Sub;
-    op_assign: ExpOp2;
+    op_assign: ExpOpOtherSet;
     v: Exp3;
 }
 export interface Exp2 {
@@ -755,7 +755,7 @@ export interface Exp2 {
 export interface Exp3Sub {
     kind: ASTKinds.Exp3Sub;
     pos: PosInfo;
-    assign: ExpOp3;
+    assign: ExpOpSet;
     v: Exp4;
 }
 export interface Exp3 {
@@ -765,7 +765,7 @@ export interface Exp3 {
 }
 export interface Exp4Sub {
     kind: ASTKinds.Exp4Sub;
-    or: ExpOp4;
+    or: ExpOpOR;
     v: Exp5;
 }
 export interface Exp4 {
@@ -775,7 +775,7 @@ export interface Exp4 {
 }
 export interface Exp5Sub {
     kind: ASTKinds.Exp5Sub;
-    and: ExpOp5;
+    and: ExpOpAND;
     v: Exp6;
 }
 export interface Exp5 {
@@ -785,7 +785,7 @@ export interface Exp5 {
 }
 export interface Exp6Sub {
     kind: ASTKinds.Exp6Sub;
-    comparison: ExpOp6;
+    comparison: ExpOpCompare;
     v: Exp7;
 }
 export interface Exp6 {
@@ -830,7 +830,7 @@ export interface Exp10 {
 }
 export interface Exp11 {
     kind: ASTKinds.Exp11;
-    not: Nullable<ExpOp11>;
+    not: Nullable<ExpOpNOT>;
     tail: Exp12;
 }
 export interface BracketIndex {
@@ -1396,52 +1396,52 @@ export class Parser {
         return this.regexAccept(String.raw`(?:/\x0a)`, $$dpth + 1, $$cr);
     }
     public matchSpace_3($$dpth: number, $$cr?: ErrorTracker): Nullable<Space_3> {
-        return this.matchComment2($$dpth + 1, $$cr);
+        return this.matchBlockComment($$dpth + 1, $$cr);
     }
-    public matchComment1($$dpth: number, $$cr?: ErrorTracker): Nullable<Comment1> {
-        return this.run<Comment1>($$dpth,
+    public matchLineComment($$dpth: number, $$cr?: ErrorTracker): Nullable<LineComment> {
+        return this.run<LineComment>($$dpth,
             () => {
                 let $scope$pos: Nullable<PosInfo>;
-                let $scope$comment: Nullable<Comment1_$0>;
-                let $$res: Nullable<Comment1> = null;
+                let $scope$comment: Nullable<LineComment_$0>;
+                let $$res: Nullable<LineComment> = null;
                 if (true
                     && this.loop<Space>(() => this.matchSpace($$dpth + 1, $$cr), true) !== null
                     && this.regexAccept(String.raw`(?://)`, $$dpth + 1, $$cr) !== null
                     && ($scope$pos = this.mark()) !== null
-                    && ($scope$comment = this.matchComment1_$0($$dpth + 1, $$cr)) !== null
+                    && ($scope$comment = this.matchLineComment_$0($$dpth + 1, $$cr)) !== null
                     && this.matchNL($$dpth + 1, $$cr) !== null
                 ) {
-                    $$res = {kind: ASTKinds.Comment1, pos: $scope$pos, comment: $scope$comment};
+                    $$res = {kind: ASTKinds.LineComment, pos: $scope$pos, comment: $scope$comment};
                 }
                 return $$res;
             });
     }
-    public matchComment1_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<Comment1_$0> {
+    public matchLineComment_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<LineComment_$0> {
         return this.loop<Char>(() => this.matchChar($$dpth + 1, $$cr), true);
     }
-    public matchComment2($$dpth: number, $$cr?: ErrorTracker): Nullable<Comment2> {
-        return this.run<Comment2>($$dpth,
+    public matchBlockComment($$dpth: number, $$cr?: ErrorTracker): Nullable<BlockComment> {
+        return this.run<BlockComment>($$dpth,
             () => {
-                let $$res: Nullable<Comment2> = null;
+                let $$res: Nullable<BlockComment> = null;
                 if (true
                     && this.regexAccept(String.raw`(?:/\*)`, $$dpth + 1, $$cr) !== null
-                    && this.loop<Comment2_$0>(() => this.matchComment2_$0($$dpth + 1, $$cr), true) !== null
+                    && this.loop<BlockComment_$0>(() => this.matchBlockComment_$0($$dpth + 1, $$cr), true) !== null
                     && this.regexAccept(String.raw`(?:\*/)`, $$dpth + 1, $$cr) !== null
                 ) {
-                    $$res = {kind: ASTKinds.Comment2, };
+                    $$res = {kind: ASTKinds.BlockComment, };
                 }
                 return $$res;
             });
     }
-    public matchComment2_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<Comment2_$0> {
-        return this.run<Comment2_$0>($$dpth,
+    public matchBlockComment_$0($$dpth: number, $$cr?: ErrorTracker): Nullable<BlockComment_$0> {
+        return this.run<BlockComment_$0>($$dpth,
             () => {
-                let $$res: Nullable<Comment2_$0> = null;
+                let $$res: Nullable<BlockComment_$0> = null;
                 if (true
                     && this.negate(() => this.regexAccept(String.raw`(?:\*/)`, $$dpth + 1, $$cr)) !== null
                     && this.matchChar($$dpth + 1, $$cr) !== null
                 ) {
-                    $$res = {kind: ASTKinds.Comment2_$0, };
+                    $$res = {kind: ASTKinds.BlockComment_$0, };
                 }
                 return $$res;
             });
@@ -1456,7 +1456,7 @@ export class Parser {
         return this.matchNL($$dpth + 1, $$cr);
     }
     public matchSep_2($$dpth: number, $$cr?: ErrorTracker): Nullable<Sep_2> {
-        return this.matchComment1($$dpth + 1, $$cr);
+        return this.matchLineComment($$dpth + 1, $$cr);
     }
     public matchSep2($$dpth: number, $$cr?: ErrorTracker): Nullable<Sep2> {
         return this.regexAccept(String.raw`(?:;)`, $$dpth + 1, $$cr);
@@ -1473,10 +1473,10 @@ export class Parser {
     public matchEmpty_2($$dpth: number, $$cr?: ErrorTracker): Nullable<Empty_2> {
         return this.run<Empty_2>($$dpth,
             () => {
-                let $scope$comment: Nullable<Comment1>;
+                let $scope$comment: Nullable<LineComment>;
                 let $$res: Nullable<Empty_2> = null;
                 if (true
-                    && ($scope$comment = this.matchComment1($$dpth + 1, $$cr)) !== null
+                    && ($scope$comment = this.matchLineComment($$dpth + 1, $$cr)) !== null
                 ) {
                     $$res = {kind: ASTKinds.Empty_2, comment: $scope$comment};
                 }
@@ -1977,109 +1977,109 @@ export class Parser {
     public matchExpSep($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpSep> {
         return this.loop<Space>(() => this.matchSpace($$dpth + 1, $$cr), true);
     }
-    public matchExpOp1($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp1> {
+    public matchExpOpComma($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpComma> {
         return this.regexAccept(String.raw`(?:,)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2> {
-        return this.choice<ExpOp2>([
-            () => this.matchExpOp2_1($$dpth + 1, $$cr),
-            () => this.matchExpOp2_2($$dpth + 1, $$cr),
-            () => this.matchExpOp2_3($$dpth + 1, $$cr),
-            () => this.matchExpOp2_4($$dpth + 1, $$cr),
-            () => this.matchExpOp2_5($$dpth + 1, $$cr),
-            () => this.matchExpOp2_6($$dpth + 1, $$cr),
-            () => this.matchExpOp2_7($$dpth + 1, $$cr),
-            () => this.matchExpOp2_8($$dpth + 1, $$cr),
-            () => this.matchExpOp2_9($$dpth + 1, $$cr),
-            () => this.matchExpOp2_10($$dpth + 1, $$cr),
-            () => this.matchExpOp2_11($$dpth + 1, $$cr),
+    public matchExpOpOtherSet($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet> {
+        return this.choice<ExpOpOtherSet>([
+            () => this.matchExpOpOtherSet_1($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_2($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_3($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_4($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_5($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_6($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_7($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_8($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_9($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_10($$dpth + 1, $$cr),
+            () => this.matchExpOpOtherSet_11($$dpth + 1, $$cr),
         ]);
     }
-    public matchExpOp2_1($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_1> {
+    public matchExpOpOtherSet_1($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_1> {
         return this.regexAccept(String.raw`(?:\+=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_2($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_2> {
+    public matchExpOpOtherSet_2($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_2> {
         return this.regexAccept(String.raw`(?:-=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_3($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_3> {
+    public matchExpOpOtherSet_3($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_3> {
         return this.regexAccept(String.raw`(?:\*=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_4($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_4> {
+    public matchExpOpOtherSet_4($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_4> {
         return this.regexAccept(String.raw`(?:/=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_5($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_5> {
+    public matchExpOpOtherSet_5($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_5> {
         return this.regexAccept(String.raw`(?:%=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_6($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_6> {
+    public matchExpOpOtherSet_6($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_6> {
         return this.regexAccept(String.raw`(?:\+:=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_7($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_7> {
+    public matchExpOpOtherSet_7($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_7> {
         return this.regexAccept(String.raw`(?:-:=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_8($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_8> {
+    public matchExpOpOtherSet_8($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_8> {
         return this.regexAccept(String.raw`(?:\*:=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_9($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_9> {
+    public matchExpOpOtherSet_9($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_9> {
         return this.regexAccept(String.raw`(?:/:=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_10($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_10> {
+    public matchExpOpOtherSet_10($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_10> {
         return this.regexAccept(String.raw`(?:%:=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp2_11($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp2_11> {
+    public matchExpOpOtherSet_11($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOtherSet_11> {
         return this.regexAccept(String.raw`(?:,=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp3($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp3> {
-        return this.choice<ExpOp3>([
-            () => this.matchExpOp3_1($$dpth + 1, $$cr),
-            () => this.matchExpOp3_2($$dpth + 1, $$cr),
+    public matchExpOpSet($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpSet> {
+        return this.choice<ExpOpSet>([
+            () => this.matchExpOpSet_1($$dpth + 1, $$cr),
+            () => this.matchExpOpSet_2($$dpth + 1, $$cr),
         ]);
     }
-    public matchExpOp3_1($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp3_1> {
+    public matchExpOpSet_1($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpSet_1> {
         return this.regexAccept(String.raw`(?:=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp3_2($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp3_2> {
+    public matchExpOpSet_2($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpSet_2> {
         return this.regexAccept(String.raw`(?::=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp4($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp4> {
+    public matchExpOpOR($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpOR> {
         return this.regexAccept(String.raw`(?:\|\|)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp5($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp5> {
+    public matchExpOpAND($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpAND> {
         return this.regexAccept(String.raw`(?:&&)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp6($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp6> {
-        return this.choice<ExpOp6>([
-            () => this.matchExpOp6_1($$dpth + 1, $$cr),
-            () => this.matchExpOp6_2($$dpth + 1, $$cr),
-            () => this.matchExpOp6_3($$dpth + 1, $$cr),
-            () => this.matchExpOp6_4($$dpth + 1, $$cr),
-            () => this.matchExpOp6_5($$dpth + 1, $$cr),
-            () => this.matchExpOp6_6($$dpth + 1, $$cr),
-            () => this.matchExpOp6_7($$dpth + 1, $$cr),
-            () => this.matchExpOp6_8($$dpth + 1, $$cr),
+    public matchExpOpCompare($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpCompare> {
+        return this.choice<ExpOpCompare>([
+            () => this.matchExpOpCompare_1($$dpth + 1, $$cr),
+            () => this.matchExpOpCompare_2($$dpth + 1, $$cr),
+            () => this.matchExpOpCompare_3($$dpth + 1, $$cr),
+            () => this.matchExpOpCompare_4($$dpth + 1, $$cr),
+            () => this.matchExpOpCompare_5($$dpth + 1, $$cr),
+            () => this.matchExpOpCompare_6($$dpth + 1, $$cr),
+            () => this.matchExpOpCompare_7($$dpth + 1, $$cr),
+            () => this.matchExpOpCompare_8($$dpth + 1, $$cr),
         ]);
     }
-    public matchExpOp6_1($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp6_1> {
+    public matchExpOpCompare_1($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpCompare_1> {
         return this.regexAccept(String.raw`(?:==)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp6_2($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp6_2> {
+    public matchExpOpCompare_2($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpCompare_2> {
         return this.regexAccept(String.raw`(?:!=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp6_3($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp6_3> {
+    public matchExpOpCompare_3($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpCompare_3> {
         return this.regexAccept(String.raw`(?:<=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp6_4($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp6_4> {
+    public matchExpOpCompare_4($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpCompare_4> {
         return this.regexAccept(String.raw`(?:>=)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp6_5($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp6_5> {
+    public matchExpOpCompare_5($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpCompare_5> {
         return this.regexAccept(String.raw`(?:<)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp6_6($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp6_6> {
+    public matchExpOpCompare_6($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpCompare_6> {
         return this.regexAccept(String.raw`(?:>)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp6_7($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp6_7> {
+    public matchExpOpCompare_7($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpCompare_7> {
         return this.regexAccept(String.raw`(?:_in_)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp6_8($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp6_8> {
+    public matchExpOpCompare_8($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpCompare_8> {
         return this.regexAccept(String.raw`(?:!_in_)`, $$dpth + 1, $$cr);
     }
     public matchExpOp7($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp7> {
@@ -2103,18 +2103,18 @@ export class Parser {
     public matchExpOp10_2($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp10_2> {
         return this.regexAccept(String.raw`(?:-)`, $$dpth + 1, $$cr);
     }
-    public matchExpOp11($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOp11> {
+    public matchExpOpNOT($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpOpNOT> {
         return this.regexAccept(String.raw`(?:!)`, $$dpth + 1, $$cr);
     }
     public matchExpS1Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpS1Sub> {
         return this.run<ExpS1Sub>($$dpth,
             () => {
-                let $scope$enum: Nullable<ExpOp1>;
+                let $scope$enum: Nullable<ExpOpComma>;
                 let $scope$v: Nullable<ExpS2>;
                 let $$res: Nullable<ExpS1Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$enum = this.matchExpOp1($$dpth + 1, $$cr)) !== null
+                    && ($scope$enum = this.matchExpOpComma($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExpS2($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2141,12 +2141,12 @@ export class Parser {
     public matchExpS2Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpS2Sub> {
         return this.run<ExpS2Sub>($$dpth,
             () => {
-                let $scope$op_assign: Nullable<ExpOp2>;
+                let $scope$op_assign: Nullable<ExpOpOtherSet>;
                 let $scope$v: Nullable<ExpS3>;
                 let $$res: Nullable<ExpS2Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$op_assign = this.matchExpOp2($$dpth + 1, $$cr)) !== null
+                    && ($scope$op_assign = this.matchExpOpOtherSet($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExpS3($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2174,13 +2174,13 @@ export class Parser {
         return this.run<ExpS3Sub>($$dpth,
             () => {
                 let $scope$pos: Nullable<PosInfo>;
-                let $scope$assign: Nullable<ExpOp3>;
+                let $scope$assign: Nullable<ExpOpSet>;
                 let $scope$v: Nullable<ExpS4>;
                 let $$res: Nullable<ExpS3Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$pos = this.mark()) !== null
-                    && ($scope$assign = this.matchExpOp3($$dpth + 1, $$cr)) !== null
+                    && ($scope$assign = this.matchExpOpSet($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExpS4($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2207,12 +2207,12 @@ export class Parser {
     public matchExpS4Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpS4Sub> {
         return this.run<ExpS4Sub>($$dpth,
             () => {
-                let $scope$or: Nullable<ExpOp4>;
+                let $scope$or: Nullable<ExpOpOR>;
                 let $scope$v: Nullable<ExpS5>;
                 let $$res: Nullable<ExpS4Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$or = this.matchExpOp4($$dpth + 1, $$cr)) !== null
+                    && ($scope$or = this.matchExpOpOR($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExpS5($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2239,12 +2239,12 @@ export class Parser {
     public matchExpS5Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpS5Sub> {
         return this.run<ExpS5Sub>($$dpth,
             () => {
-                let $scope$and: Nullable<ExpOp5>;
+                let $scope$and: Nullable<ExpOpAND>;
                 let $scope$v: Nullable<ExpS6>;
                 let $$res: Nullable<ExpS5Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$and = this.matchExpOp5($$dpth + 1, $$cr)) !== null
+                    && ($scope$and = this.matchExpOpAND($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExpS6($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2271,12 +2271,12 @@ export class Parser {
     public matchExpS6Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpS6Sub> {
         return this.run<ExpS6Sub>($$dpth,
             () => {
-                let $scope$comparison: Nullable<ExpOp6>;
+                let $scope$comparison: Nullable<ExpOpCompare>;
                 let $scope$v: Nullable<ExpS7>;
                 let $$res: Nullable<ExpS6Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$comparison = this.matchExpOp6($$dpth + 1, $$cr)) !== null
+                    && ($scope$comparison = this.matchExpOpCompare($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExpS7($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2415,11 +2415,11 @@ export class Parser {
     public matchExpS11($$dpth: number, $$cr?: ErrorTracker): Nullable<ExpS11> {
         return this.run<ExpS11>($$dpth,
             () => {
-                let $scope$not: Nullable<Nullable<ExpOp11>>;
+                let $scope$not: Nullable<Nullable<ExpOpNOT>>;
                 let $scope$tail: Nullable<ExpS12>;
                 let $$res: Nullable<ExpS11> = null;
                 if (true
-                    && (($scope$not = this.matchExpOp11($$dpth + 1, $$cr)) || true)
+                    && (($scope$not = this.matchExpOpNOT($$dpth + 1, $$cr)) || true)
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$tail = this.matchExpS12($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2778,12 +2778,12 @@ export class Parser {
     public matchExp1Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<Exp1Sub> {
         return this.run<Exp1Sub>($$dpth,
             () => {
-                let $scope$enum: Nullable<ExpOp1>;
+                let $scope$enum: Nullable<ExpOpComma>;
                 let $scope$v: Nullable<Exp2>;
                 let $$res: Nullable<Exp1Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$enum = this.matchExpOp1($$dpth + 1, $$cr)) !== null
+                    && ($scope$enum = this.matchExpOpComma($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExp2($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2810,12 +2810,12 @@ export class Parser {
     public matchExp2Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<Exp2Sub> {
         return this.run<Exp2Sub>($$dpth,
             () => {
-                let $scope$op_assign: Nullable<ExpOp2>;
+                let $scope$op_assign: Nullable<ExpOpOtherSet>;
                 let $scope$v: Nullable<Exp3>;
                 let $$res: Nullable<Exp2Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$op_assign = this.matchExpOp2($$dpth + 1, $$cr)) !== null
+                    && ($scope$op_assign = this.matchExpOpOtherSet($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExp3($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2843,13 +2843,13 @@ export class Parser {
         return this.run<Exp3Sub>($$dpth,
             () => {
                 let $scope$pos: Nullable<PosInfo>;
-                let $scope$assign: Nullable<ExpOp3>;
+                let $scope$assign: Nullable<ExpOpSet>;
                 let $scope$v: Nullable<Exp4>;
                 let $$res: Nullable<Exp3Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$pos = this.mark()) !== null
-                    && ($scope$assign = this.matchExpOp3($$dpth + 1, $$cr)) !== null
+                    && ($scope$assign = this.matchExpOpSet($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExp4($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2876,12 +2876,12 @@ export class Parser {
     public matchExp4Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<Exp4Sub> {
         return this.run<Exp4Sub>($$dpth,
             () => {
-                let $scope$or: Nullable<ExpOp4>;
+                let $scope$or: Nullable<ExpOpOR>;
                 let $scope$v: Nullable<Exp5>;
                 let $$res: Nullable<Exp4Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$or = this.matchExpOp4($$dpth + 1, $$cr)) !== null
+                    && ($scope$or = this.matchExpOpOR($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExp5($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2908,12 +2908,12 @@ export class Parser {
     public matchExp5Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<Exp5Sub> {
         return this.run<Exp5Sub>($$dpth,
             () => {
-                let $scope$and: Nullable<ExpOp5>;
+                let $scope$and: Nullable<ExpOpAND>;
                 let $scope$v: Nullable<Exp6>;
                 let $$res: Nullable<Exp5Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$and = this.matchExpOp5($$dpth + 1, $$cr)) !== null
+                    && ($scope$and = this.matchExpOpAND($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExp6($$dpth + 1, $$cr)) !== null
                 ) {
@@ -2940,12 +2940,12 @@ export class Parser {
     public matchExp6Sub($$dpth: number, $$cr?: ErrorTracker): Nullable<Exp6Sub> {
         return this.run<Exp6Sub>($$dpth,
             () => {
-                let $scope$comparison: Nullable<ExpOp6>;
+                let $scope$comparison: Nullable<ExpOpCompare>;
                 let $scope$v: Nullable<Exp7>;
                 let $$res: Nullable<Exp6Sub> = null;
                 if (true
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
-                    && ($scope$comparison = this.matchExpOp6($$dpth + 1, $$cr)) !== null
+                    && ($scope$comparison = this.matchExpOpCompare($$dpth + 1, $$cr)) !== null
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$v = this.matchExp7($$dpth + 1, $$cr)) !== null
                 ) {
@@ -3084,11 +3084,11 @@ export class Parser {
     public matchExp11($$dpth: number, $$cr?: ErrorTracker): Nullable<Exp11> {
         return this.run<Exp11>($$dpth,
             () => {
-                let $scope$not: Nullable<Nullable<ExpOp11>>;
+                let $scope$not: Nullable<Nullable<ExpOpNOT>>;
                 let $scope$tail: Nullable<Exp12>;
                 let $$res: Nullable<Exp11> = null;
                 if (true
-                    && (($scope$not = this.matchExpOp11($$dpth + 1, $$cr)) || true)
+                    && (($scope$not = this.matchExpOpNOT($$dpth + 1, $$cr)) || true)
                     && this.matchExpSep($$dpth + 1, $$cr) !== null
                     && ($scope$tail = this.matchExp12($$dpth + 1, $$cr)) !== null
                 ) {

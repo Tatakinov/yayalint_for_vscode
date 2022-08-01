@@ -25,17 +25,17 @@ NumberX
 NumberRX
   := num=NumberX | num=NumberR
 Space
-  := '[ \t\f]' | '/\x0a' | Comment2
-Comment1
+  := '[ \t\f]' | '/\x0a' | BlockComment
+LineComment
   := Space* '//' pos=@ comment={Char*} NL
-Comment2
+BlockComment
   := '/\*' {!'\*/' Char}* '\*/'
 Sep
-  := NL | Comment1
+  := NL | LineComment
 Sep2
   := ';'
 Empty
-  := {Space* NL} | comment=Comment1
+  := {Space* NL} | comment=LineComment
 SepEx
   := NL | Space
 Reserve
@@ -90,17 +90,17 @@ String_Single
 
 ExpSep
   := Space*
-ExpOp1
+ExpOpComma
   := ','
-ExpOp2
+ExpOpOtherSet
   := '\+=' | '-=' | '\*=' | '/=' | '%=' | '\+:=' | '-:=' | '\*:=' | '/:=' | '%:=' | ',='
-ExpOp3
+ExpOpSet
   := '=' | ':='
-ExpOp4
+ExpOpOR
   := '\|\|'
-ExpOp5
+ExpOpAND
   := '&&'
-ExpOp6
+ExpOpCompare
   := '==' | '!=' | '<=' | '>=' | '<' | '>' | '_in_' | '!_in_'
 ExpOp7
   := '&'
@@ -110,31 +110,31 @@ ExpOp9
   := '[*/%]'
 ExpOp10
   := '\+\+' | '-'
-ExpOp11
+ExpOpNOT
   := '!'
 
 ExpS1Sub
-  := ExpSep enum=ExpOp1 ExpSep v=ExpS2
+  := ExpSep enum=ExpOpComma ExpSep v=ExpS2
 ExpS1
   := head=ExpS2 tail=ExpS1Sub*
 ExpS2Sub
-  := ExpSep op_assign=ExpOp2 ExpSep v=ExpS3
+  := ExpSep op_assign=ExpOpOtherSet ExpSep v=ExpS3
 ExpS2
   := head=ExpS3 tail=ExpS2Sub*
 ExpS3Sub
-  := ExpSep pos=@ assign=ExpOp3 ExpSep v=ExpS4
+  := ExpSep pos=@ assign=ExpOpSet ExpSep v=ExpS4
 ExpS3
   := head=ExpS4 tail=ExpS3Sub*
 ExpS4Sub
-  := ExpSep or=ExpOp4 ExpSep v=ExpS5
+  := ExpSep or=ExpOpOR ExpSep v=ExpS5
 ExpS4
   := head=ExpS5 tail=ExpS4Sub*
 ExpS5Sub
-  := ExpSep and=ExpOp5 ExpSep v=ExpS6
+  := ExpSep and=ExpOpAND ExpSep v=ExpS6
 ExpS5
   := head=ExpS6 tail=ExpS5Sub*
 ExpS6Sub
-  := ExpSep comparison=ExpOp6 ExpSep v=ExpS7
+  := ExpSep comparison=ExpOpCompare ExpSep v=ExpS7
 ExpS6
   := head=ExpS7 tail=ExpS6Sub*
 ExpS7
@@ -152,7 +152,7 @@ ExpS10Sub
 ExpS10
   := head=ExpS11 tail=ExpS10Sub*
 ExpS11
-  := not=ExpOp11? ExpSep tail=ExpS12
+  := not=ExpOpNOT? ExpSep tail=ExpS12
 
 BracketIndexS
   := ExpSep '\[' ExpSep v=ExpInStringSub ExpSep '\]'
@@ -193,27 +193,27 @@ Expression
   := Exp1
 
 Exp1Sub
-  := ExpSep enum=ExpOp1 ExpSep v=Exp2
+  := ExpSep enum=ExpOpComma ExpSep v=Exp2
 Exp1
   := head=Exp2 tail=Exp1Sub*
 Exp2Sub
-  := ExpSep op_assign=ExpOp2 ExpSep v=Exp3
+  := ExpSep op_assign=ExpOpOtherSet ExpSep v=Exp3
 Exp2
   := head=Exp3 tail=Exp2Sub*
 Exp3Sub
-  := ExpSep pos=@ assign=ExpOp3 ExpSep v=Exp4
+  := ExpSep pos=@ assign=ExpOpSet ExpSep v=Exp4
 Exp3
   := head=Exp4 tail=Exp3Sub*
 Exp4Sub
-  := ExpSep or=ExpOp4 ExpSep v=Exp5
+  := ExpSep or=ExpOpOR ExpSep v=Exp5
 Exp4
   := head=Exp5 tail=Exp4Sub*
 Exp5Sub
-  := ExpSep and=ExpOp5 ExpSep v=Exp6
+  := ExpSep and=ExpOpAND ExpSep v=Exp6
 Exp5
   := head=Exp6 tail=Exp5Sub*
 Exp6Sub
-  := ExpSep comparison=ExpOp6 ExpSep v=Exp7
+  := ExpSep comparison=ExpOpCompare ExpSep v=Exp7
 Exp6
   := head=Exp7 tail=Exp6Sub*
 Exp7
@@ -231,7 +231,7 @@ Exp10Sub
 Exp10
   := head=Exp11 tail=Exp10Sub*
 Exp11
-  := not=ExpOp11? ExpSep tail=Exp12
+  := not=ExpOpNOT? ExpSep tail=Exp12
 BracketIndex
   := ExpSep '\[' ExpSep v=Expression ExpSep '\]'
 BracketCall
