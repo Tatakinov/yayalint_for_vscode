@@ -1,0 +1,11 @@
+{
+    //https://marketplace.visualstudio.com/items?itemName=emeraldwalk.RunOnSave
+    "emeraldwalk.runonsave": {
+        "commands": [
+            {
+                "match": "\\.peg$",
+                "cmd": "tspeg --include-grammar-comment=false ${file} ${fileDirname}\\parser.ts"
+            }
+        ]
+    }
+}
