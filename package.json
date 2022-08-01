@@ -74,5 +74,9 @@
 	},
 	"dependencies": {
 		"vscode-nls": "^5.0.0"
-	}
+	},
+	"bugs": {
+		"url": "https://github.com/Tatakinov/yayalint_for_vscode/issues"
+	},
+	"homepage": "https://github.com/Tatakinov/yayalint_for_vscode#readme"
 }
