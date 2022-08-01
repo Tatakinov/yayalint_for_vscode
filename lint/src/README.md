@@ -8,5 +8,5 @@ npm install -g tspeg
 
 でコマンドを実行。
 ```
-tspeg --include-grammar-comment=false gammar.peg parser.ts
+tspeg --include-grammar-comment=false grammar.peg parser.ts
 ```
