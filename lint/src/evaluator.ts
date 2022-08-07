@@ -1,7 +1,22 @@
 import * as Parser from './parser';
 
-export type AnalysisResultType = 'UnusedVariable' | 'UndefinedVariable' |
-    'UnusedFunction' | 'UndefinedFunction'
+export type AnalysisResultType = 
+"error.invalid_format"|
+
+"info.unused_variable"|
+"info.unused_function"|
+"warning.undefined_variable"|
+"warning.undefined_function"|
+"warning.case_statement_contains_not_when_or_other"|
+"warning.assign_in_conditional_statement"|
+"warning.dic_not_found"|
+"warning.dicdir_not_found"|
+"warning.dic_or_dicdir_not_found"|
+"info.not_include_line_in_dicdir_config_file"|
+"info.double_quoted_string_that_can_convert_to_single_quoted"|
+"warning.single_quoted_string_that_may_need_double_quoted"|
+"warning.maybe_unstopable_loop"|
+"error.syntax_error"
 
 type TreatmentType  = 'read' | 'write'
 
@@ -197,7 +212,7 @@ function evalLocalVariable(ast:Parser.LocalVariable, data:AnalysisData) {
     if ( ! data.preprocess) {
         if (info.read && ! info.write) {
             data.result.push({
-                type: 'UndefinedVariable',
+                type: 'warning.undefined_variable',
                 filename: data.filename,
                 range: info.read
             });
@@ -1064,7 +1079,7 @@ function evalFunctionName(ast:Parser.FunctionName, data:AnalysisData) {
         const state = data.global_var.get(name)!
         if ( ! state.read) {
             data.result.push({
-                type: 'UnusedFunction',
+                type: 'info.unused_function',
                 filename: data.filename,
                 range: range
             });
