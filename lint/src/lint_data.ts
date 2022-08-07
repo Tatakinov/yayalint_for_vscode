@@ -1,4 +1,15 @@
 import * as fs from 'fs';
+import * as Parser from './parser';
+
+interface Range {
+    start:Position;
+    end:Position;
+}
+interface Position {
+    line:number;
+    column:number;
+}
+
 namespace yaya_parser {
 	export class define{
 		_name: string;
@@ -159,6 +170,19 @@ export class Dicfile{
 		return false;
 	}
 	public re_parse(gobal_define_map:yaya_parser.gobal_define_map):yaya_parser.gobal_define_map{
+		//file_content to string
+		let file_content: string = this._file_content.join("\n");
+		//parse gobal defines
+		//for each line match gobal define, replace it with the value in gobal define map
+		gobal_define_map._data.forEach((value,key)=>{
+				file_content = file_content.replace(key, value);
+			}
+		);
+		//parse
+		let parser: Parser.Parser = new Parser.Parser(file_content);
+		let parser_result: Parser.ParseResult = parser.parse();
+		//parse gobal | not gobal defines
+		
 		//TODO re_parse
 		this._gobal_define_map_charge = gobal_define_map.marge(this._gobal_defines);
 		return this._gobal_define_map_charge;
