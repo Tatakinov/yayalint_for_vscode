@@ -170,21 +170,59 @@ export class Dicfile{
 		return false;
 	}
 	public re_parse(gobal_define_map:yaya_parser.gobal_define_map):yaya_parser.gobal_define_map{
-		//file_content to string
-		let file_content: string = this._file_content.join("\n");
-		//parse gobal defines
-		//for each line match gobal define, replace it with the value in gobal define map
-		gobal_define_map._data.forEach((value,key)=>{
-				file_content = file_content.replace(key, value);
+		let file_content: string = '';
+		// pre process
+		let line_number	= 1;
+		for (const line of this._file_content) {
+			// TODO considering here document and string
+			if (line.startsWith('#define')) {
+				let position = 7;
+				let tmp = line.substring(position);
+				position = tmp.search(/[^ \t　]/);
+				tmp = tmp.substring(position);
+				position = tmp.search(/ |\t|　/);
+				const key = tmp.substring(0, position - 1);
+				tmp = tmp.substring(position);
+				const value = tmp.substring(tmp.search(/[^ \t　]/));
+				this._defines.add(key, value);
+				file_content += '\n';
 			}
-		);
+			else if (line.startsWith('#globaldefine')) {
+				let position = 13;
+				let tmp = line.substring(position);
+				position = tmp.search(/[^ \t　]/);
+				tmp = tmp.substring(position);
+				position = tmp.search(/ |\t|　/);
+				const key = tmp.substring(0, position - 1);
+				tmp = tmp.substring(position);
+				const value = tmp.substring(tmp.search(/[^ \t　]/));
+				this._gobal_defines.add(key, value);
+				gobal_define_map.add(key, value);
+				file_content += '\n';
+			}
+			else {
+				let tmp = line;
+				tmp = tmp.replace(/__AYA_SYSTEM_FILE__/, this._file_name);
+				tmp = tmp.replace(/__AYA_SYSTEM_LINE__/, line_number.toString());
+				// replace define
+				for (const define of this._defines.get_define_list()) {
+					tmp = tmp.replace(define._name, define._value);
+				}
+				// replace globaldefine
+				for (const define of gobal_define_map.get_define_list()) {
+					tmp = tmp.replace(define._name, define._value);
+				}
+				file_content += tmp + '\n';
+			}
+			line_number++;
+		}
 		//parse
 		let parser: Parser.Parser = new Parser.Parser(file_content);
 		let parser_result: Parser.ParseResult = parser.parse();
 		//parse gobal | not gobal defines
 		
 		//TODO re_parse
-		this._gobal_define_map_charge = gobal_define_map.marge(this._gobal_defines);
+		this._gobal_define_map_charge = gobal_define_map;
 		return this._gobal_define_map_charge;
 	}
 }
